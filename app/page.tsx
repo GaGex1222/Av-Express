@@ -1,366 +1,220 @@
 "use client";
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
-import useMeasure from 'react-use-measure';
-import { Truck, MapPin, CheckCircle, Smartphone, ArrowLeft, Zap, Menu, X, Layers, Clock, Shield, Zap as ZapIcon } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Truck, Star, Zap, Shield, Menu, X, Check, ArrowLeft, MousePointer2, Smartphone, PackageCheck, Flame, Timer, Users, CalendarClock, MapPin } from 'lucide-react';
 
-// קומפוננטת כרטיס עם אפקט 3D במעבר עכבר
-const FloatingCard = ({ children, className }: { children: React.ReactNode; className?: string }) => {
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  const mouseXSpring = useSpring(x);
-  const mouseYSpring = useSpring(y);
-
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const xPct = (e.clientX - rect.left) / rect.width - 0.5;
-    const yPct = (e.clientY - rect.top) / rect.height - 0.5;
-    x.set(xPct);
-    y.set(yPct);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
-  return (
-    <motion.div
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      className={`relative ${className}`}
-    >
-      <div style={{ transform: "translateZ(50px)", transformStyle: "preserve-3d" }}>
-        {children}
+const ReviewCard = ({ name, role, content }: { name: string, role: string, content: string }) => (
+  <div className="bg-white border-2 border-slate-100 p-6 md:p-8 rounded-[2.5rem] shadow-[0_10px_30px_rgba(0,0,0,0.02)] hover:border-blue-600 transition-all group text-right">
+    <div className="flex gap-1 mb-4 justify-start flex-row-reverse">
+      {[1, 2, 3, 4, 5].map((s) => <Star key={s} size={14} fill="#2563eb" className="text-blue-600" />)}
+    </div>
+    <p className="text-slate-600 mb-8 text-lg font-bold italic leading-relaxed">"{content}"</p>
+    <div className="flex items-center gap-4 border-t border-slate-50 pt-6 justify-start flex-row-reverse">
+      <div className="w-12 h-12 bg-slate-900 rounded-full flex items-center justify-center text-white font-black shadow-lg order-1">
+        {name[0]}
       </div>
-    </motion.div>
-  );
-};
+      <div className="text-right order-2">
+        <h5 className="font-black text-slate-900">{name}</h5>
+        <p className="text-[10px] text-blue-600 font-bold uppercase tracking-widest">{role}</p>
+      </div>
+    </div>
+  </div>
+);
 
-export default function LandingPage() {
+// רכיב הסטטיסטיקה המעודכן - בסגנון כרטיס המעקב
+const StatCard = ({ icon, title, value, subtitle, highlight = false }: { icon: React.ReactNode, title: string, value: string, subtitle: string, highlight?: boolean }) => (
+  <div className={`bg-white border-2 ${highlight ? 'border-blue-600' : 'border-slate-100'} p-8 rounded-[2.5rem] shadow-sm flex flex-col items-center justify-center text-center group hover:shadow-xl transition-all h-full`}>
+    <div className="mb-4 text-blue-600 group-hover:scale-110 transition-transform">
+      {icon}
+    </div>
+    <div className="text-4xl font-black italic tracking-tighter text-slate-900 mb-1">{value}</div>
+    <div className="text-lg font-black uppercase text-slate-900 italic leading-tight">{title}</div>
+    <p className="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-widest">{subtitle}</p>
+  </div>
+);
+
+export default function HebrewDeliveryLanding() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [heroRef, { height: heroHeight }] = useMeasure();
-  const { scrollY } = useScroll();
 
-  const heroOpacity = useTransform(scrollY, [0, heroHeight || 500], [1, 0]);
-  const heroScale = useTransform(scrollY, [0, heroHeight || 500], [1, 0.9]);
-  const bgY = useTransform(scrollY, [0, 1000], ["0%", "15%"]);
-
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const steps = [
+    { title: "הזמנה ב-60 שניות", desc: "מזינים כתובת איסוף ויעד בממשק הקליל שלנו. בלי טלפונים ובלי המתנה.", icon: <MousePointer2 size={24} /> },
+    { title: "איתור שליח", desc: "השליח הקרוב ביותר אליכם מקבל את הקריאה ויוצא לדרך תוך רגעים.", icon: <Smartphone size={24} /> },
+    { title: "טיסה ליעד", desc: "החבילה שלכם מקבלת עדיפות עליונה וטסה ליעד במסלול המהיר ביותר.", icon: <Flame size={24} /> },
+    { title: "אישור מסירה", desc: "מקבלים חיוך והודעת SMS שהחבילה הגיעה בבטחה. פשוט ומושלם.", icon: <PackageCheck size={24} /> }
+  ];
 
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-100 font-sans selection:bg-blue-600/30 overflow-x-hidden antialiased" dir="rtl">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans antialiased overflow-x-hidden" dir="rtl">
       
-      {/* רקע אימרסיבי */}
-      <motion.div style={{ y: bgY }} className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute -top-[10%] -left-[10%] w-[60%] h-[60%] bg-blue-600/10 blur-[140px] rounded-full opacity-60"></div>
-        <div className="absolute bottom-[10%] -right-[10%] w-[50%] h-[50%] bg-indigo-600/10 blur-[140px] rounded-full opacity-40"></div>
-      </motion.div>
-
-      {/* Nav */}
-      <nav className="fixed top-0 w-full z-[100] px-4 py-4 md:px-8">
-        <motion.div 
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="max-w-7xl mx-auto flex items-center justify-between bg-white/5 backdrop-blur-2xl border border-white/10 rounded-2xl px-5 py-3 shadow-2xl relative z-[101]"
-        >
+      {/* Navbar */}
+      <nav className="fixed top-0 w-full z-[100] bg-white/90 backdrop-blur-xl border-b border-slate-100 px-6 py-4">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="bg-linear-to-br from-blue-500 to-indigo-600 p-2 rounded-xl">
-              <Truck className="text-white w-5 h-5" />
+            <div className="bg-blue-600 p-2 rounded-xl shadow-lg shadow-blue-200">
+              <Truck className="text-white w-6 h-6" />
             </div>
-            <span className="text-xl md:text-2xl font-black tracking-tighter text-white uppercase">
-              A.V EXPRESS
+            <span className="text-xl md:text-2xl font-black tracking-tighter italic text-slate-900">
+              AV Express
             </span>
           </div>
 
-          <div className="hidden md:flex items-center gap-8 text-sm font-bold text-slate-300">
-            <a href="#features" className="hover:text-white transition">מה אנחנו עושים</a>
-            <a href="#tracking" className="hover:text-white transition">מעקב משלוח</a>
-            <button className="bg-white text-black px-6 py-2 rounded-xl font-black hover:bg-blue-50 transition-transform active:scale-95 shadow-lg">הזמן עכשיו</button>
+          <div className="hidden lg:flex gap-10 font-black text-sm text-slate-500">
+            <a href="#how" className="hover:text-blue-600 transition-colors tracking-tight">איך זה עובד?</a>
+            <a href="#reviews" className="hover:text-blue-600 transition-colors tracking-tight">מה אומרים עלינו?</a>
+            <a href="#stats" className="hover:text-blue-600 transition-colors tracking-tight">למה אנחנו?</a>
           </div>
 
-          {/* Mobile Toggle Button */}
-          <button className="md:hidden p-2 text-white relative z-[102]" onClick={toggleMenu}>
-            {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
-        </motion.div>
-
-        {/* Mobile Dropdown Menu */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-150 md:hidden bg-[#020617]/90 backdrop-blur-2xl flex flex-col justify-center items-center p-8"
-            >
-              {/* כפתור סגירה צף למעלה */}
-              <button 
-                onClick={() => setIsMenuOpen(false)}
-                className="absolute top-8 left-8 p-3 bg-white/5 border border-white/10 rounded-full text-white"
-              >
-                <X size={32} />
-              </button>
-
-              <div className="flex flex-col gap-10 text-center">
-                {[
-                  { name: "מה אנחנו עושים", href: "#features" },
-                  { name: "מעקב משלוח", href: "#tracking" },
-                  { name: "צור קשר", href: "#contact" }
-                ].map((item, i) => (
-                  <motion.a
-                    key={item.name}
-                    href={item.href}
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: i * 0.1 + 0.2 }}
-                    onClick={() => setIsMenuOpen(false)}
-                    className="text-4xl font-black text-white hover:text-blue-500 transition-colors tracking-tighter"
-                  >
-                    {item.name}
-                  </motion.a>
-                ))}
-                
-                <motion.div
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                >
-                  <button className="mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-12 py-6 rounded-3xl font-black text-2xl shadow-[0_20px_50px_rgba(37,99,235,0.4)]">
-                    הזמן עכשיו
-                  </button>
-                </motion.div>
-              </div>
-
-              {/* אלמנט עיצובי בתחתית */}
-              <div className="absolute bottom-12 flex items-center gap-3 opacity-30">
-                <Truck className="text-white w-6 h-6" />
-                <span className="text-white font-black tracking-widest uppercase">A.V EXPRESS</span>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+          <div className="flex items-center gap-4">
+            <button className="bg-slate-900 text-white px-6 md:px-8 py-3 rounded-full font-black text-sm hover:bg-blue-600 transition-all transform hover:scale-105 shadow-xl active:scale-95">
+              הזמן עכשיו
+            </button>
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden text-slate-900"><Menu size={28} /></button>
+          </div>
+        </div>
       </nav>
 
       {/* Hero Section */}
-      <motion.header 
-        ref={heroRef}
-        style={{ opacity: heroOpacity, scale: heroScale }}
-        className="relative pt-32 pb-20 md:pt-56 md:pb-40 px-6 z-10 text-center"
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 rounded-full px-4 py-1.5 mb-8">
-            <Zap size={14} className="text-blue-400 fill-blue-400" />
-            <span className="text-blue-400 text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">משלוח אחד • אינספור יעדים</span>
-          </div>
-          
-          <h1 className="text-5xl md:text-[7rem] font-black text-white mb-8 tracking-tighter leading-[0.95]">
-            משלוחים חכמים.<br />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-400 to-blue-600">לכולם.</span>
+      <section className="relative pt-40 md:pt-48 pb-16 md:pb-24 px-6 bg-white overflow-hidden">
+        <div className="absolute top-0 left-0 w-1/3 h-full bg-blue-50/50 -skew-x-12 -translate-x-20 -z-10" />
+        
+        <div className="max-w-7xl mx-auto text-center relative z-10 flex flex-col items-center">
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-6 py-2 rounded-full text-xs font-black mb-10 tracking-widest border border-blue-100 uppercase">
+            <Zap size={14} className="fill-blue-600" />
+            משלוחים מעכשיו לעכשיו!
+          </motion.div>
+
+          <h1 className="text-[14vw] md:text-[9vw] lg:text-[8rem] font-black leading-[0.9] tracking-[-0.04em] italic mb-12 text-slate-900 uppercase">
+            הזמן <span className="text-blue-600">טס.</span> <br />
+            גם <span className="relative">
+                אנחנו.
+                <div className="absolute bottom-2 md:bottom-4 right-0 w-full h-2 md:h-4 bg-blue-100 -z-10 -rotate-1" />
+            </span>
           </h1>
-          
-          <p className="text-slate-400 text-lg md:text-2xl max-w-2xl mx-auto mb-12 leading-relaxed font-medium">
-            בין אם אתם צריכים לשלוח חבילה לחבר או להפיץ סחורה לעשרה לקוחות בבת אחת – אנחנו עושים את זה פשוט, מהיר ובטוח.
+
+          <p className="text-slate-500 text-lg md:text-2xl font-bold max-w-2xl mx-auto mb-10 leading-relaxed px-4">
+            החבילה שלך לא צריכה לחכות לבוקר. <br />
+            מעכשיו לעכשיו, מחר בבוקר או מתי שנוח לך — אנחנו שם.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
-            <motion.button 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-full sm:w-auto bg-blue-600 text-white px-10 py-5 rounded-2xl font-black text-xl shadow-[0_20px_50px_rgba(37,99,235,0.3)] flex items-center justify-center gap-3"
-            >
-              התחל משלוח חדש
-              <ArrowLeft size={24} />
-            </motion.button>
-            
-            <motion.button 
-              whileHover={{ scale: 1.05, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
-              className="w-full sm:w-auto bg-white/5 border border-white/10 text-white px-10 py-5 rounded-2xl font-black text-xl backdrop-blur-md transition-colors"
-            >
-              איך זה עובד?
-            </motion.button>
+          <button className="bg-blue-600 text-white px-10 py-6 md:px-16 md:py-8 rounded-[2.5rem] font-black text-xl md:text-3xl shadow-[0_25px_50px_rgba(37,99,235,0.2)] hover:bg-slate-900 hover:scale-105 transition-all flex items-center gap-6 group mb-10 uppercase">
+            להזמנת משלוח מיידי
+            <ArrowLeft size={32} className="group-hover:translate-x-3 transition-transform" />
+          </button>
+        </div>
+      </section>
+
+      {/* Timeline Section */}
+      <section id="how" className="py-24 md:py-32 px-6 bg-[#F8FAFC]">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-20 gap-8 text-right">
+            <div>
+                <h2 className="text-5xl md:text-7xl font-black italic tracking-tighter text-slate-900 uppercase">המסלול המהיר</h2>
+                <p className="text-blue-600 font-black mt-4 uppercase">מבצעים הזמנה ב-4 שלבים פשוטים</p>
+            </div>
           </div>
-        </motion.div>
-      </motion.header>
 
-      {/* Bento Grid Features */}
-      <section id="features" className="py-20 px-6 max-w-7xl mx-auto z-10 relative">
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
-          
-          {/* Multi-dropoff Card */}
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="md:col-span-4"
-          >
-            <FloatingCard className="h-full">
-              <div className="h-full bg-linear-to-br from-blue-600 to-indigo-800 rounded-[2.5rem] p-8 md:p-12 border border-white/10 shadow-2xl relative overflow-hidden group">
-                <div className="relative z-10">
-                  <div className="w-14 h-14 bg-white/20 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-8">
-                    <Layers className="text-white" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+            {steps.map((step, index) => (
+              <div key={index} className="relative group">
+                <div className="bg-white p-8 md:p-10 rounded-[3rem] border-2 border-slate-100 shadow-sm relative z-10 hover:border-blue-600 transition-all h-full text-right">
+                  <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                    {step.icon}
                   </div>
-                  <h3 className="text-3xl md:text-5xl font-black mb-6">איסוף אחד, פיזור אינסופי</h3>
-                  <p className="text-blue-100 text-lg mb-8 max-w-md leading-relaxed">
-                    המערכת שלנו מאפשרת לכם להזין נקודת איסוף אחת ולפזר אותה לעשרות יעדים שונים. אידיאלי להפצות מכל סוג.
-                  </p>
-                  <div className="flex gap-4">
-                    <div className="flex items-center gap-2 text-white font-bold text-sm bg-white/10 px-4 py-2 rounded-lg">
-                      <CheckCircle size={16} /> חיסכון בזמן
-                    </div>
-                    <div className="flex items-center gap-2 text-white font-bold text-sm bg-white/10 px-4 py-2 rounded-lg">
-                      <CheckCircle size={16} /> מחיר משתלם
-                    </div>
-                  </div>
+                  <h4 className="text-2xl font-black mb-4 text-slate-900 uppercase">{step.title}</h4>
+                  <p className="text-slate-500 font-medium leading-relaxed">{step.desc}</p>
                 </div>
-                <MapPin className="absolute -bottom-10 -left-10 w-64 h-64 text-white/5 rotate-12 transition-transform group-hover:rotate-0 duration-700" />
               </div>
-            </FloatingCard>
-          </motion.div>
-
-          {/* Simple Process Card */}
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="md:col-span-2 bg-slate-900/50 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white/5 flex flex-col justify-between group"
-          >
-            <div>
-              <div className="w-12 h-12 bg-indigo-500/20 rounded-2xl flex items-center justify-center mb-6">
-                <Clock className="text-indigo-400" />
-              </div>
-              <h3 className="text-2xl font-black mb-4">בזמן שלך</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                קובעים משלוח להיום או מתזמנים לעתיד. אנחנו נגיע בדיוק מתי שנוח לכם.
-              </p>
-            </div>
-            <div className="mt-8 pt-6 border-t border-white/5 font-black text-blue-400 flex items-center gap-2 group-hover:gap-4 transition-all cursor-pointer">
-              תזמן משלוח <ArrowLeft size={18} />
-            </div>
-          </motion.div>
-
-          {/* Feature 1 */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="md:col-span-3 bg-slate-900/50 backdrop-blur-xl rounded-[2.5rem] p-10 border border-white/5 flex items-center gap-6"
-          >
-            <div className="p-4 bg-blue-500/10 rounded-2xl text-blue-400"><Smartphone /></div>
-            <div>
-              <h4 className="font-black text-xl mb-1">הזמנה ללא הרשמה</h4>
-              <p className="text-slate-500 text-sm italic">מזינים פרטים, משלמים והשליח בדרך. פשוט ככה.</p>
-            </div>
-          </motion.div>
-
-          {/* Feature 2: Flexible Delivery */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="md:col-span-3 bg-slate-900/50 backdrop-blur-xl rounded-[2.5rem] p-10 border border-white/5 flex items-center gap-6 group"
-          >
-            <div className="p-4 bg-indigo-500/10 rounded-2xl text-indigo-400"><CheckCircle /></div>
-            <div>
-              <h4 className="font-black text-xl mb-1">כל דרכי המסירה</h4>
-              <p className="text-slate-500 text-sm italic">ישר לידיים, בפתח המשרד או צילום ליד הדלת. אתם קובעים.</p>
-            </div>
-          </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Why Us Section */}
-      <section className="py-20 px-6 max-w-7xl mx-auto z-10 relative border-t border-white/5">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="flex flex-col items-center text-center group"
-          >
-            <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 border border-blue-500/20 group-hover:bg-blue-600 group-hover:scale-110 transition-all duration-300">
-              <Clock className="text-blue-400 group-hover:text-white" size={32} />
+      {/* Stats Section - Unification with Card Style */}
+      <section id="stats" className="py-24 md:py-32 px-6 bg-white overflow-hidden">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 md:gap-20 items-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 order-2 lg:order-1">
+                <StatCard 
+                  icon={<Timer size={32} />} 
+                  value="42" 
+                  title="דקות למסירה" 
+                  subtitle="זמן הגעה ממוצע"
+                  highlight={false} 
+                />
+                <StatCard 
+                  icon={<Users size={32} />} 
+                  value="2.4K" 
+                  title="ביקורות חיוביות" 
+                  subtitle="לקוחות מרוצים"
+                />
+                <StatCard 
+                  icon={<Shield size={32} />} 
+                  value="אבטחה" 
+                  title="מלאה" 
+                  subtitle="ביטוח מלא על כל חבילה"
+                />
+                <StatCard 
+                  icon={<CalendarClock size={32} />} 
+                  value="גמישות" 
+                  title="שיא" 
+                  subtitle="עכשיו, מחר או מתי שנוח"
+                />
             </div>
-            <h3 className="text-2xl font-black mb-3 text-white">מגיעים הכי מהר מכולם</h3>
-            <p className="text-slate-400 leading-relaxed font-medium">
-               אנחנו ממוקדים באזורי הפעילות שלנו, מה שמאפשר לנו לקצר זמני המתנה ולהגיע אליכם במהירות מזמן הקריאה.
-            </p>
-          </motion.div>
 
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="flex flex-col items-center text-center group"
-          >
-            <div className="w-16 h-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center mb-6 border border-indigo-500/20 group-hover:bg-indigo-600 group-hover:scale-110 transition-all duration-300">
-              <Shield className="text-indigo-400 group-hover:text-white" size={32} />
+            <div className="text-center lg:text-right order-1 lg:order-2">
+                <h2 className="text-5xl md:text-7xl font-black mb-10 leading-tight tracking-tighter italic text-slate-900 uppercase">
+                  אנחנו לא שליחים. <br /> אנחנו <span className="text-blue-600 font-black">הפתרון.</span>
+                </h2>
+                <p className="text-slate-500 text-lg md:text-xl font-medium mb-12 leading-relaxed">
+                  נמאס לכם לחכות ימים לחבילה? נמאס לכם מתירוצים? 
+                  AV Express הוקמה כדי לתת לכם שקט נפשי. מהירות שהיא סטנדרט, לא בונוס.
+                </p>
+                <div className="flex gap-4 justify-center lg:justify-end">
+                    <div className="bg-white px-6 py-4 rounded-2xl border-2 border-slate-100 flex items-center gap-3">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                        <span className="text-slate-900 font-black text-sm uppercase italic">ACTIVE DELIVERY NOW</span>
+                    </div>
+                </div>
             </div>
-            <h3 className="text-2xl font-black mb-3 text-white">אפס תקלות, מאה אחוז שקט</h3>
-            <p className="text-slate-400 leading-relaxed font-medium">
-              הביטחון שלכם הוא בראש סדר העדיפויות שלנו. כל חבילה מטופלת כאילו הייתה שלנו, עם אחריות מלאה בכל שלב.
-            </p>
-          </motion.div>
-
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="flex flex-col items-center text-center group"
-          >
-            <div className="w-16 h-16 bg-blue-400/10 rounded-2xl flex items-center justify-center mb-6 border border-blue-400/20 group-hover:bg-blue-400 group-hover:scale-110 transition-all duration-300">
-              <ZapIcon className="text-blue-400 group-hover:text-white" size={32} />
-            </div>
-            <h3 className="text-2xl font-black mb-3 text-white">מחיר הוגן ושקיפות מלאה</h3>
-            <p className="text-slate-400 leading-relaxed font-medium">
-              בלי עמלות נסתרות ובלי הפתעות. המחיר שאתם רואים באתר הוא המחיר שתשלמו, כולל מעקב חי עד למסירה.
-            </p>
-          </motion.div>
-
         </div>
       </section>
 
-      {/* Footer CTA */}
-      <footer className="relative py-32 px-6 text-center">
-        <div className="max-w-4xl mx-auto relative z-10">
-          <motion.h2 
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-7xl font-black mb-10 tracking-tight text-white"
-          >
-            לא משנה מה הכמות,<br />
-            אנחנו נביא את זה.
-          </motion.h2>
-          <motion.button 
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="bg-white text-black px-12 py-5 rounded-2xl font-black text-2xl shadow-2xl hover:bg-blue-50 transition-all"
-          >
-            הזמן משלוח עכשיו
-          </motion.button>
-          
-          <div className="mt-24 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-slate-500 text-xs font-bold uppercase tracking-widest">
+      {/* Reviews Section */}
+      <section id="reviews" className="py-24 md:py-32 bg-[#F8FAFC] px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-24">
+            <h2 className="text-5xl md:text-8xl font-black italic mb-6 tracking-tighter text-slate-900 uppercase">הביקורות מדברות.</h2>
+            <div className="w-24 h-2 bg-blue-600 mx-auto" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            <ReviewCard name="יונתן ל." role="לקוח מרוצה" content="הזמנתי בשעה 22:00 בלילה, ותוך 35 דקות השליח כבר דפק בדלת. אין דברים כאלה בארץ." />
+            <ReviewCard name="מעיין כ." role="בעלת עסק" content="סוף סוף שירות שאפשר לסמוך עליו. הצילו לי הזמנה דחופה של לקוחה והפכו אותי למלכה." />
+            <ReviewCard name="אסף ד." role="משתמש קבוע" content="האפליקציה הכי נוחה שיצא לי לעבוד איתה. שני קליקים והשליח אצלי. פשוט תענוג." />
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-24 md:py-32 px-6 text-center bg-slate-900 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-blue-600/10 -skew-y-6 translate-y-20" />
+        <div className="max-w-4xl mx-auto relative z-10 flex flex-col items-center px-4">
+          <h3 className="text-4xl md:text-7xl font-black mb-12 italic leading-none text-white uppercase">
+            החבילה שלך <br /> <span className="text-blue-600 font-black">לא תחכה לבד.</span>
+          </h3>
+          <button className="bg-blue-600 text-white px-10 py-6 md:px-16 md:py-8 rounded-[2.5rem] font-black text-xl md:text-3xl shadow-2xl hover:scale-105 hover:bg-white hover:text-blue-600 transition-all mb-20 uppercase">
+            בואו נצא לדרך
+          </button>
+          <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mb-4">© 2026 AV Express - הסטנדרט החדש במהירות</p>
+          <div className="flex flex-wrap justify-center items-center gap-4">
             <div className="flex items-center gap-2">
-              <Truck size={16} className="text-blue-500" />
-              <span className="text-white font-black">A.V EXPRESS</span>
+                <Check size={14} className="text-blue-600" />
+                <span className="text-[10px] font-black text-slate-400 italic uppercase">שירות בפריסה ארצית</span>
             </div>
-            <p>© 2026 כל הזכויות שמורות – לוגיסטיקה חכמה לכולם</p>
+            <div className="flex items-center gap-2">
+                <Check size={14} className="text-blue-600" />
+                <span className="text-[10px] font-black text-slate-400 italic uppercase">אחריות וביטוח מלא</span>
+            </div>
           </div>
         </div>
       </footer>
