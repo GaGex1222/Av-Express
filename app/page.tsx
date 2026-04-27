@@ -56,7 +56,7 @@ const Navbar = () => {
           {/* לוגו + דגל ישראל (תמונה) */}
           <Link href="/" className="flex items-center gap-3 group">
             <span className="text-2xl font-black italic uppercase tracking-tighter">
-              DELIVERY<span className="text-[#FF5100]">NOW</span>
+              DELIVERY  <span className="text-[#FF5100]">NOW</span>
             </span>
             <img 
               src="https://flagcdn.com/w40/il.png" 
