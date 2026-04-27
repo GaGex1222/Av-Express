@@ -262,19 +262,26 @@ export default function DeliveryNowLanding() {
     </section>
 
       {/* 4. PROCESS SECTION */}
-      <section id="how-it-works" className="py-32 px-6 bg-[#080808] border-y border-white/5">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
-            <h2 className="text-6xl md:text-8xl font-black italic tracking-tighter uppercase leading-none">המסלול <br/><span className="text-[#FF5100]">המהיר.</span></h2>
-            <p className="text-gray-500 font-bold max-w-sm italic">ב-DeliveryNow אנחנו לא מאמינים בבירוקרטיה. 3 צעדים ואנחנו בדרך אליך.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <StepCard number="01" title="הזמנה באתר" text="שולחים הודעה עם כתובת איסוף ויעד. מקבלים מחיר סגור וסופי תוך 60 שניות." />
-            <StepCard number="02" title="איסוף מיידי" text="השליח הכי קרוב יוצא אליכם במהירות שיא." />
-            <StepCard number="03" title="אישור מסירה" text="החבילה הגיעה. אתם מקבלים צילום של המסירה ואישור חתום למייל באופן אוטומטי." />
-          </div>
+    <section id="how-it-works" className="py-32 px-6 bg-[#080808] border-y border-white/5">
+      <div className="max-w-7xl mx-auto">
+        {/* items-start ensures it pins RIGHT in RTL on mobile; md:items-end restores the desktop look */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-8 text-right w-full">
+          <h2 className="text-6xl md:text-8xl font-black italic tracking-tighter uppercase leading-none text-white">
+            המסלול <br/>
+            <span className="text-[#FF5100]">המהיר.</span>
+          </h2>
+          <p className="text-gray-500 font-bold max-w-sm italic">
+            ב-DeliveryNow אנחנו לא מאמינים בבירוקרטיה. 3 צעדים ואנחנו בדרך אליך.
+          </p>
         </div>
-      </section>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <StepCard number="01" title="הזמנה באתר" text="שולחים הודעה עם כתובת איסוף ויעד. מקבלים מחיר סגור וסופי תוך 60 שניות." />
+          <StepCard number="02" title="איסוף מיידי" text="השליח הכי קרוב יוצא אליכם במהירות שיא." />
+          <StepCard number="03" title="אישור מסירה" text="החבילה הגיעה. אתם מקבלים צילום של המסירה ואישור חתום למייל באופן אוטומטי." />
+        </div>
+      </div>
+    </section>
 
 {/* --- SECTION: PACKAGE TYPES --- */}
       <section className="py-32 px-6 bg-[#0A0A0A]">
