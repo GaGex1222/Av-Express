@@ -204,29 +204,35 @@ export default function DeliveryNowLanding() {
       </section>
 
       {/* 3. STATS SECTION - Updated with Extra Reason */}
-      <section className="py-32 px-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {[
-            { label: "זמן ממוצע לאיסוף", val: 24, unit: " דק'", icon: <Timer /> },
-            { label: "מסירות מוצלחות", val: 99.8, unit: "%", icon: <CheckCircle2 /> },
-            { label: "חיסכון בעלויות שילוח", val: 30, unit: "%", icon: <BarChart3 /> },
-            { label: "לקוחות חוזרים", val: 92, unit: "%", icon: <Users /> },
-            { label: "זמינות מסביב לשעון", val: 24, unit: "/6", icon: <CalendarClock /> },
-          ].map((stat, i) => (
-            <motion.div 
-              key={i}
-              variants={fadeInUp} initial="initial" whileInView="whileInView"
-              className="p-8 bg-[#111] border border-white/5 rounded-[2rem] text-center group hover:border-[#FF5100] transition-colors"
-            >
-              <div className="text-[#FF5100] mb-4 flex justify-center">{stat.icon}</div>
-              <div className="text-4xl font-black italic text-white mb-2">
-                {typeof stat.val === "number" ? <AnimatedNumber value={stat.val} /> : stat.val}{stat.unit}
-              </div>
-              <div className="text-[10px] font-black uppercase text-gray-500 tracking-widest">{stat.label}</div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+    <section className="py-32 px-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        {[
+          { label: "זמן ממוצע לאיסוף", val: 24, unit: " דק'", icon: <Timer /> },
+          { label: "מסירות מוצלחות", val: 99.8, unit: "%", icon: <CheckCircle2 /> },
+          { label: "חיסכון בעלויות שילוח", val: 30, unit: "%", icon: <BarChart3 /> },
+          { label: "לקוחות חוזרים", val: 92, unit: "%", icon: <Users /> },
+          { label: "זמינות מסביב לשעון", val: 24, unit: "/6", icon: <CalendarClock /> },
+        ].map((stat, i) => (
+          <motion.div 
+            key={i}
+            variants={fadeInUp} 
+            initial="initial" 
+            whileInView="whileInView"
+            // כאן הקסם: אם זה האלמנט האחרון (אינדקס 4), הוא מקבל col-span-2 במובייל
+            // ובמסכים גדולים יותר (lg) הוא חוזר להיות עמודה אחת (col-span-1)
+            className={`p-8 bg-[#111] border border-white/5 rounded-[2rem] text-center group hover:border-[#FF5100] transition-colors ${
+              i === 4 ? "col-span-2 lg:col-span-1" : "col-span-1"
+            }`}
+          >
+            <div className="text-[#FF5100] mb-4 flex justify-center">{stat.icon}</div>
+            <div className="text-4xl font-black italic text-white mb-2 leading-none">
+              {typeof stat.val === "number" ? <AnimatedNumber value={stat.val} /> : stat.val}{stat.unit}
+            </div>
+            <div className="text-[10px] font-black uppercase text-gray-500 tracking-widest">{stat.label}</div>
+          </motion.div>
+        ))}
+      </div>
+    </section>
 
       {/* 4. PROCESS SECTION */}
       <section id="how-it-works" className="py-32 px-6 bg-[#080808] border-y border-white/5">
@@ -246,13 +252,23 @@ export default function DeliveryNowLanding() {
       {/* 5. INDUSTRY SOLUTIONS */}
       <section id="solutions" className="py-32 px-6 bg-[#0F0F0F]">
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-5xl font-black italic uppercase mb-16">פתרונות לכל <span className="text-[#FF5100]">התחומים</span></h2>
+          <h2 className="text-5xl font-black italic uppercase mb-16 text-white">
+            פתרונות לכל <span className="text-[#FF5100]">התחומים</span>
+          </h2>
+          
           <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
             <SolutionItem icon={<User size={48}/>} title="לקוח פרטי" />
             <SolutionItem icon={<Scale size={48}/>} title="עורכי דין" />
             <SolutionItem icon={<Store size={48}/>} title="חנויות וקמעונאות" />
             <SolutionItem icon={<Landmark size={48}/>} title="הייטק ופיננסים" />
-            <SolutionItem icon={<HardHat size={48}/>} title="תעשייה ולוגיסטיקה" />
+            
+            {/* שימוש ב-col-span-2 במובייל וביטולו (col-span-1) בדסקטופ */}
+            <div className="col-span-2 md:col-span-1">
+              <SolutionItem 
+                icon={<HardHat size={48}/>} 
+                title="תעשייה ולוגיסטיקה" 
+              />
+            </div>
           </div>
         </div>
       </section>

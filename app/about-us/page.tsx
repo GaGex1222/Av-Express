@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users, Rocket, Target, ShieldCheck, Heart, 
@@ -20,43 +20,77 @@ const fadeInUp = {
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-[300] bg-black/50 backdrop-blur-xl border-b border-white/5 py-4 px-6">
-      <div className="max-w-7xl mx-auto flex justify-between items-center" dir="rtl">
-        <Link href="/" className="text-2xl font-black italic uppercase tracking-tighter">
-          DELIVERY<span className="text-[#FF5100]">NOW</span>
-        </Link>
-        
-        <div className="hidden md:flex gap-8 items-center font-bold text-sm uppercase italic">
-          <Link href="/" className="hover:text-[#FF5100] transition-colors">בית</Link>
-          <Link href="/about-us" className="text-[#FF5100]">אודות</Link>
-          <Link href="/#how-it-works" className="hover:text-[#FF5100] transition-colors">איך זה עובד</Link>
-          <Link href="/order" className="bg-white text-black px-4 py-2 rounded-lg hover:bg-[#FF5100] transition-all">הזמינו עכשיו</Link>
-        </div>
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [isOpen]);
 
-        <button className="md:hidden text-white" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <X size={28} /> : <Menu size={28} />}
-        </button>
-      </div>
+  return (
+    <>
+      <nav className="fixed top-0 left-0 right-0 z-[300] bg-black/50 backdrop-blur-xl border-b border-white/5 py-3 px-6">
+        <div className="max-w-7xl mx-auto flex justify-between items-center" dir="rtl">
+          
+          {/* לוגו + דגל ישראל (תמונה) */}
+          <Link href="/" className="flex items-center gap-3 group">
+            <span className="text-2xl font-black italic uppercase tracking-tighter">
+              DELIVERY<span className="text-[#FF5100]">NOW</span>
+            </span>
+            <img 
+              src="https://flagcdn.com/w40/il.png" 
+              alt="Israel Flag" 
+              className="h-4 w-auto rounded-sm shadow-sm border border-white/10 group-hover:border-[#FF5100]/50 transition-all"
+            />
+          </Link>
+          
+          {/* Desktop Links */}
+          <div className="hidden md:flex gap-8 items-center font-bold text-sm uppercase italic">
+            <Link href="/" className="hover:text-[#FF5100] transition-colors">בית</Link>
+            <Link href="/about-us" className="hover:text-[#FF5100] transition-colors">אודות</Link>
+            <Link href="/order" className="bg-white text-black px-4 py-2 rounded-lg hover:bg-[#FF5100] transition-all">הזמינו שליח</Link>
+          </div>
+
+          {/* Mobile Toggle Button */}
+          <button 
+            className="md:hidden text-white relative z-[400] p-2 hover:text-[#FF5100] transition-colors" 
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <X size={32} strokeWidth={3} /> : <Menu size={32} />}
+          </button>
+        </div>
+      </nav>
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-black border-t border-white/5 overflow-hidden"
-          >
-            <div className="flex flex-col p-6 gap-6 font-black italic uppercase text-lg text-right">
-              <Link href="/" onClick={() => setIsOpen(false)}>בית</Link>
-              <Link href="/about-us" onClick={() => setIsOpen(false)} className="text-[#FF5100]">אודות</Link>
-              <Link href="/#how-it-works" onClick={() => setIsOpen(false)}>איך זה עובד</Link>
-              <Link href="/order" onClick={() => setIsOpen(false)}>הזמינו עכשיו</Link>
-            </div>
-          </motion.div>
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsOpen(false)}
+              className="fixed inset-0 bg-black/95 backdrop-blur-md md:hidden z-[310]"
+            />
+
+            <motion.div 
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-[#0A0A0A] border-l border-white/10 z-[315] md:hidden flex flex-col p-8 pt-24"
+              dir="rtl"
+            >
+              <div className="flex flex-col gap-8 text-right font-black italic uppercase text-4xl">
+                <Link href="/" onClick={() => setIsOpen(false)}>בית</Link>
+                <Link href="/about-us" onClick={() => setIsOpen(false)}>אודות</Link>
+                <Link href="/order" onClick={() => setIsOpen(false)} className="text-[#FF5100]">הזמינו עכשיו</Link>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
-    </nav>
+    </>
   );
 };
 
