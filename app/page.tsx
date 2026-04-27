@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Truck, Star, Zap, Shield, Menu, X, Check, ArrowLeft, MousePointer2, Smartphone, PackageCheck, Flame, Timer, Users, CalendarClock, MapPin } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const ReviewCard = ({ name, role, content }: { name: string, role: string, content: string }) => (
   <div className="bg-white border-2 border-slate-100 p-6 md:p-8 rounded-[2.5rem] shadow-[0_10px_30px_rgba(0,0,0,0.02)] hover:border-blue-600 transition-all group text-right">
@@ -36,7 +38,7 @@ const StatCard = ({ icon, title, value, subtitle, highlight = false }: { icon: R
 
 export default function HebrewDeliveryLanding() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const router = useRouter();
   const steps = [
     { title: "הזמנה ב-60 שניות", desc: "מזינים כתובת איסוף ויעד בממשק הקליל שלנו. בלי טלפונים ובלי המתנה.", icon: <MousePointer2 size={24} /> },
     { title: "איתור שליח", desc: "השליח הקרוב ביותר אליכם מקבל את הקריאה ויוצא לדרך תוך רגעים.", icon: <Smartphone size={24} /> },
@@ -55,7 +57,7 @@ export default function HebrewDeliveryLanding() {
               <Truck className="text-white w-6 h-6" />
             </div>
             <span className="text-xl md:text-2xl font-black tracking-tighter italic text-slate-900">
-              AV Express
+              DeliveryNow
             </span>
           </div>
 
@@ -97,10 +99,13 @@ export default function HebrewDeliveryLanding() {
             מעכשיו לעכשיו, מחר בבוקר או מתי שנוח לך — אנחנו שם.
           </p>
 
-          <button className="bg-blue-600 text-white px-10 py-6 md:px-16 md:py-8 rounded-[2.5rem] font-black text-xl md:text-3xl shadow-[0_25px_50px_rgba(37,99,235,0.2)] hover:bg-slate-900 hover:scale-105 transition-all flex items-center gap-6 group mb-10 uppercase">
+          <Link 
+            href="/order" 
+            className="bg-[#0066FF] text-white px-10 py-6 md:px-16 md:py-8 rounded-[2.5rem] font-black italic text-xl md:text-3xl shadow-[0_25px_50px_rgba(0,102,255,0.3)] hover:bg-black hover:scale-105 transition-all inline-flex items-center gap-6 group mb-10 uppercase no-underline"
+          >
             להזמנת משלוח מיידי
             <ArrowLeft size={32} className="group-hover:translate-x-3 transition-transform" />
-          </button>
+          </Link>
         </div>
       </section>
 
@@ -167,7 +172,7 @@ export default function HebrewDeliveryLanding() {
                 </h2>
                 <p className="text-slate-500 text-lg md:text-xl font-medium mb-12 leading-relaxed">
                   נמאס לכם לחכות ימים לחבילה? נמאס לכם מתירוצים? 
-                  AV Express הוקמה כדי לתת לכם שקט נפשי. מהירות שהיא סטנדרט, לא בונוס.
+                  DeliveryNow הוקמה כדי לתת לכם שקט נפשי. מהירות שהיא סטנדרט, לא בונוס.
                 </p>
                 <div className="flex gap-4 justify-center lg:justify-end">
                     <div className="bg-white px-6 py-4 rounded-2xl border-2 border-slate-100 flex items-center gap-3">
@@ -205,7 +210,7 @@ export default function HebrewDeliveryLanding() {
           <button className="bg-blue-600 text-white px-10 py-6 md:px-16 md:py-8 rounded-[2.5rem] font-black text-xl md:text-3xl shadow-2xl hover:scale-105 hover:bg-white hover:text-blue-600 transition-all mb-20 uppercase">
             בואו נצא לדרך
           </button>
-          <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mb-4">© 2026 AV Express - הסטנדרט החדש במהירות</p>
+          <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mb-4">© 2026 DeliveryNow - הסטנדרט החדש במהירות</p>
           <div className="flex flex-wrap justify-center items-center gap-4">
             <div className="flex items-center gap-2">
                 <Check size={14} className="text-blue-600" />
