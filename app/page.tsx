@@ -161,46 +161,73 @@ export default function DeliveryNowLanding() {
           <img 
             src="/landing_page.png" 
             alt="Delivery Background"
-            className="w-full h-full object-cover brightness-50"
+            className="w-full h-full object-cover brightness-70"
           />
         </div>
         
-        <div className="max-w-6xl mx-auto text-center relative z-20 pt-20">
-          <motion.h1 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-[12vw] md:text-[8vw] font-black leading-[0.9] tracking-tighter italic mb-8 uppercase"
-          >
-            שליחויות - <br />
-            <span className="text-[#FF5100]">בלי לרדוף</span> אחרי אף אחד
-          </motion.h1>
-          
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-lg md:text-2xl text-white/90 max-w-3xl mx-auto mb-12 font-medium leading-relaxed"
-          >
-            נמאס לכם להתקשר, לחכות למענה, ולא לדעת איפה החבילה? תוך דקה אחת סוגרים איסוף - 
-            רואים שנכנס, מקבלים עדכון בדרך, ומקבלים בשקט.
-          </motion.p>
-          
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-20">
-            <Link href="/order" className="bg-[#FF5100] text-black px-12 py-6 rounded-2xl font-black italic text-2xl shadow-[0_0_40px_rgba(255,81,0,0.3)] hover:scale-105 transition-all flex items-center gap-4">
-              <Zap className="fill-black" size={24} />
-              הזמן שליחות עכשיו
-            </Link>
-            <Link href="#how-it-works" className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-12 py-6 rounded-2xl font-black text-2xl hover:bg-white/20 transition-all">
-              איך זה עובד?
-            </Link>
-          </motion.div>
+<div className="max-w-5xl mx-auto text-center relative z-20 pt-20 px-4">
+  {/* כותרת ראשית */}
+  <motion.h1 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="text-5xl md:text-7xl lg:text-8xl font-black leading-[1.1] tracking-tighter italic mb-4 uppercase drop-shadow-2xl"
+  >
+    שליחויות <br />
+    <span className="text-[#FF5100]">בלי לרדוף אחריי אף אחד</span>
+  </motion.h1>
 
-          <div className="flex flex-wrap justify-center gap-x-12 gap-y-4 text-white/60 text-xs font-black uppercase italic tracking-widest">
-            <div className="flex items-center gap-2"><CheckCircle2 size={16} className="text-[#FF5100]" /> הזמנה בתוך דקה</div>
-            <div className="flex items-center gap-2"><CheckCircle2 size={16} className="text-[#FF5100]" /> עדכונים בזמן אמת</div>
-            <div className="flex items-center gap-2"><CheckCircle2 size={16} className="text-[#FF5100]" /> נתניה, הסביבה והמרכז</div>
-          </div>
-        </div>
+  {/* שורת קהל יעד - מוסיפה סדר ומרכזת את המסר */}
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ delay: 0.2 }}
+    className="text-lg md:text-2xl font-black italic uppercase tracking-[0.2em] text-white/90 mb-6"
+  >
+    לאנשים עסקיים ופרטיים
+  </motion.div>
+  
+  {/* קו מפריד לחיזוק הסימטריה */}
+  <motion.div 
+    initial={{ scaleX: 0 }}
+    animate={{ scaleX: 1 }}
+    transition={{ delay: 0.3 }}
+    className="w-24 h-1 bg-[#FF5100] mx-auto mb-8 rounded-full"
+  />
+
+  {/* פסקת הסבר - מהודקת יותר כדי לא להיראות "מפוזרת" */}
+  <motion.p 
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ delay: 0.4 }}
+    className="text-lg md:text-2xl font-medium italic text-white/80 mb-12 max-w-3xl mx-auto leading-relaxed"
+  >
+    נמאס לכם להתקשר, לחכות למענה, ולא לדעת איפה החבילה? <br className="hidden md:block" />
+    תוך דקה אחת סוגרים איסוף - רואים שנכנס, מעדכנים בדרך, ומקבלים בשקט.
+  </motion.p>
+  
+  {/* כפתורים */}
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }} 
+    animate={{ opacity: 1, y: 0 }} 
+    transition={{ delay: 0.5 }} 
+    className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+  >
+    <Link 
+      href="/order" 
+      className="w-full sm:w-auto bg-[#FF5100] text-white px-10 py-4 md:px-14 md:py-5 text-lg md:text-xl rounded-xl font-black italic shadow-[0_0_30px_rgba(255,81,0,0.3)] hover:scale-105 transition-all flex items-center justify-center gap-3"
+    >
+      <Zap className="fill-white w-5 h-5 md:w-6 md:h-6" />
+      <span>הזמן שליחות עכשיו</span>
+    </Link>
+
+    <Link 
+      href="#how-it-works" 
+      className="w-full sm:w-auto bg-white/5 backdrop-blur-md border border-white/10 text-white px-10 py-4 md:px-14 md:py-5 text-lg md:text-xl rounded-xl font-black hover:bg-white/10 transition-all text-center"
+    >
+      איך זה עובד?
+    </Link>
+  </motion.div>
+</div>
       </section>
 
       {/* 3. STATS SECTION - Updated with Extra Reason */}
@@ -245,6 +272,110 @@ export default function DeliveryNowLanding() {
             <StepCard number="01" title="הזמנה באתר" text="שולחים הודעה עם כתובת איסוף ויעד. מקבלים מחיר סגור וסופי תוך 60 שניות." />
             <StepCard number="02" title="איסוף מיידי" text="השליח הכי קרוב יוצא אליכם במהירות שיא." />
             <StepCard number="03" title="אישור מסירה" text="החבילה הגיעה. אתם מקבלים צילום של המסירה ואישור חתום למייל באופן אוטומטי." />
+          </div>
+        </div>
+      </section>
+
+{/* --- SECTION: PACKAGE TYPES --- */}
+      <section className="py-32 px-6 bg-[#0A0A0A]">
+        <div className="max-w-7xl mx-auto">
+          <motion.div 
+            variants={fadeInUp}
+            initial="initial"
+            whileInView="whileInView"
+            className="text-center mb-16"
+          >
+            <h2 className="text-5xl md:text-7xl font-black italic uppercase mb-4">
+              בוחרים את <span className="text-[#FF5100]">הגודל.</span>
+            </h2>
+            <p className="text-gray-500 font-bold italic tracking-wide text-lg">דיוק זה שם המשחק. בחרו את הקטגוריה המתאימה לכם:</p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-right">
+            
+            {/* 01. מעטפה */}
+            <motion.div 
+              whileHover={{ y: -8 }}
+              className="bg-[#111] p-8 rounded-[2rem] border border-white/5 hover:border-[#FF5100]/40 transition-all flex flex-col h-full"
+            >
+              <div className="text-[#FF5100] mb-6"><MessageSquare size={40} /></div>
+              <h3 className="text-2xl font-black italic mb-2 uppercase text-white">מעטפה</h3>
+              <p className="text-gray-500 font-bold text-sm mb-6 leading-tight">מסמכים משפטיים, חוזים, צ'קים או ניירת משרדית.</p>
+              <div className="mt-auto space-y-3">
+                <div className="flex justify-between items-center bg-white/5 p-3 rounded-lg border border-white/5">
+                  <span className="text-gray-400 text-xs font-black italic">מידות</span>
+                  <span className="text-white font-black text-sm">עד A4 / 25x35 ס"מ</span>
+                </div>
+                <div className="flex justify-between items-center bg-white/5 p-3 rounded-lg border border-white/5">
+                  <span className="text-gray-400 text-xs font-black italic">משקל</span>
+                  <span className="text-[#FF5100] font-black text-sm">עד 500 גרם</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* 02. חבילה קטנה */}
+            <motion.div 
+              whileHover={{ y: -8 }}
+              className="bg-[#111] p-8 rounded-[2rem] border border-white/5 hover:border-[#FF5100]/40 transition-all flex flex-col h-full"
+            >
+              <div className="text-[#FF5100] mb-6"><Zap size={40} /></div>
+              <h3 className="text-2xl font-black italic mb-2 uppercase text-white">חבילה קטנה</h3>
+              <p className="text-gray-500 font-bold text-sm mb-6 leading-tight">מפתחות, מוצרי אלקטרוניקה קטנים, תרופות או ספרים.</p>
+              <div className="mt-auto space-y-3">
+                <div className="flex justify-between items-center bg-white/5 p-3 rounded-lg border border-white/5">
+                  <span className="text-gray-400 text-xs font-black italic">מידות</span>
+                  <span className="text-white font-black text-sm">30x20x10 ס"מ</span>
+                </div>
+                <div className="flex justify-between items-center bg-white/5 p-3 rounded-lg border border-white/5">
+                  <span className="text-gray-400 text-xs font-black italic">משקל</span>
+                  <span className="text-[#FF5100] font-black text-sm">עד 2 ק"ג</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* 03. חבילה בינונית - מודגשת */}
+            <motion.div 
+              whileHover={{ y: -8 }}
+              className="bg-[#111] p-8 rounded-[2rem] border-2 border-[#FF5100] shadow-[0_0_30px_rgba(255,81,0,0.1)] flex flex-col h-full relative"
+            >
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#FF5100] text-black text-[10px] font-black px-4 py-1 rounded-full uppercase tracking-tighter">
+                הכי פופולרי
+              </div>
+              <div className="text-[#FF5100] mb-6"><Store size={40} /></div>
+              <h3 className="text-2xl font-black italic mb-2 uppercase text-white">חבילה בינונית</h3>
+              <p className="text-gray-500 font-bold text-sm mb-6 leading-tight">מארזים, נעליים, מוצרי טקסטיל או משלוחים מהחנות.</p>
+              <div className="mt-auto space-y-3">
+                <div className="flex justify-between items-center bg-[#FF5100]/10 p-3 rounded-lg border border-[#FF5100]/20">
+                  <span className="text-gray-400 text-xs font-black italic">מידות</span>
+                  <span className="text-white font-black text-sm">45x45x45 ס"מ</span>
+                </div>
+                <div className="flex justify-between items-center bg-[#FF5100]/10 p-3 rounded-lg border border-[#FF5100]/20">
+                  <span className="text-gray-400 text-xs font-black italic">משקל</span>
+                  <span className="text-[#FF5100] font-black text-sm">עד 10 ק"ג</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* 04. חבילה גדולה */}
+            <motion.div 
+              whileHover={{ y: -8 }}
+              className="bg-[#111] p-8 rounded-[2rem] border border-white/5 hover:border-[#FF5100]/40 transition-all flex flex-col h-full"
+            >
+              <div className="text-[#FF5100] mb-6"><Briefcase size={40} /></div>
+              <h3 className="text-2xl font-black italic mb-2 uppercase text-white">חבילה גדולה</h3>
+              <p className="text-gray-500 font-bold text-sm mb-6 leading-tight">ציוד מחשוב, מכשירי חשמל, מארזים כבדים או ציוד משרדי.</p>
+              <div className="mt-auto space-y-3">
+                <div className="flex justify-between items-center bg-white/5 p-3 rounded-lg border border-white/5">
+                  <span className="text-gray-400 text-xs font-black italic">מידות</span>
+                  <span className="text-white font-black text-sm">60x60x60 ס"מ</span>
+                </div>
+                <div className="flex justify-between items-center bg-white/5 p-3 rounded-lg border border-white/5">
+                  <span className="text-gray-400 text-xs font-black italic">משקל</span>
+                  <span className="text-[#FF5100] font-black text-sm">עד 25 ק"ג</span>
+                </div>
+              </div>
+            </motion.div>
+
           </div>
         </div>
       </section>
