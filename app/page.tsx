@@ -3,13 +3,14 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, useScroll, useSpring, useInView, animate, AnimatePresence } from 'framer-motion';
 import { 
-  Timer, CheckCircle2, MessageSquare, Zap, Users, 
-  ArrowRight, BarChart3, Store,
-  Briefcase, Menu, X, CalendarClock,
+  Timer, CheckCircle2, Zap, Users, 
+  ArrowRight, BarChart3, Menu, X, CalendarClock,
   Mail,
   Box,
   Package,
-  Truck
+  ShoppingBag,
+  Archive,
+  Phone
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -39,50 +40,91 @@ const AnimatedNumber = ({ value, duration = 2 }: { value: number, duration?: num
   return <span ref={ref}>{displayValue.toLocaleString(undefined, { maximumFractionDigits: 1 })}</span>;
 };
 
-// Navbar remains untouched as requested
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-[300] bg-white border-b border-gray-200 py-4 px-6 shadow-sm">
-        <div className="max-w-7xl mx-auto flex justify-between items-center" dir="rtl">
-          <Link href="/" className="flex items-center gap-3 group">
+      {/* Navbar הראשי */}
+      <nav className="fixed top-0 left-0 right-0 z-[100] bg-white border-b border-gray-100 py-4 px-6 h-[72px] flex items-center">
+        <div className="max-w-7xl mx-auto w-full flex justify-between items-center" dir="rtl">
+          <Link href="/" className="flex items-center gap-3">
             <span className="text-2xl font-black italic uppercase tracking-tighter text-black">
               DELIVERY <span className="text-[#FF5100]">NOW</span>
             </span>
-            <img src="https://flagcdn.com/w40/il.png" alt="Israel" className="h-4 rounded-sm border border-black/20" />
+            <img 
+              src="https://flagcdn.com/w40/il.png" 
+              alt="Israel" 
+              className="h-4 w-auto rounded-sm border border-gray-200" 
+            />
           </Link>
           
-          <div className="hidden md:flex gap-8 items-center font-bold text-sm uppercase italic">
-            <Link href="/" className="text-black/80 hover:text-[#FF5100] transition-colors">בית</Link>
-            <Link href="/about-us" className="text-black/80 hover:text-[#FF5100] transition-colors">אודות</Link>
-            <Link href="#how-it-works" className="text-black/80 hover:text-[#FF5100] transition-colors">איך זה עובד</Link>
-            <Link href="/order" className="bg-black text-white px-5 py-2 rounded-full hover:bg-[#FF5100] transition-all">הזמינו שליח</Link>
-          </div>
-
-          <button className="md:hidden text-black z-[301]" onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <X size={32} /> : <Menu size={32} />}
+          <button 
+            className="md:hidden text-black p-2" 
+            onClick={() => setIsOpen(true)}
+          >
+            <Menu size={30} />
           </button>
         </div>
       </nav>
 
-      {/* Mobile Menu with Animation */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="md:hidden fixed inset-0 z-[299] bg-white pt-24 px-6 space-y-6 flex flex-col font-black italic uppercase text-2xl" 
-            dir="rtl"
-          >
-              <Link href="/" onClick={() => setIsOpen(false)} className="text-black/80 hover:text-[#FF5100] transition-colors border-b border-gray-100 pb-4">בית</Link>
-              <Link href="/about-us" onClick={() => setIsOpen(false)} className="text-black/80 hover:text-[#FF5100] transition-colors border-b border-gray-100 pb-4">אודות</Link>
-              <Link href="#how-it-works" onClick={() => setIsOpen(false)} className="text-black/80 hover:text-[#FF5100] transition-colors border-b border-gray-100 pb-4">איך זה עובד</Link>
-              <Link href="/order" onClick={() => setIsOpen(false)} className="bg-[#FF5100] text-white px-5 py-4 rounded-xl transition-all text-center mt-4">הזמינו שליח</Link>
-          </motion.div>
+          <>
+            {/* Overlay */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsOpen(false)}
+              className="fixed inset-0 bg-black/40 z-[998] md:hidden backdrop-blur-sm"
+            />
+
+            {/* ה-Dropdown שיושב מעל הכל (Overlap) */}
+            <motion.div 
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed top-0 right-0 bottom-0 w-[85%] max-w-[340px] z-[999] bg-white shadow-[-20px_0_50px_rgba(0,0,0,0.2)] flex flex-col md:hidden"
+              dir="rtl"
+            >
+              {/* Header פנימי בתוך התפריט עם כפתור סגירה */}
+              <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-white">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl font-black italic uppercase tracking-tighter text-black">
+                    DELIVERY <span className="text-[#FF5100]">NOW</span>
+                  </span>
+                  <img 
+                    src="https://flagcdn.com/w40/il.png" 
+                    alt="Israel" 
+                    className="h-3 w-auto rounded-sm border border-gray-100" 
+                  />
+                </div>
+                <button onClick={() => setIsOpen(false)} className="text-black p-1">
+                  <X size={30} />
+                </button>
+              </div>
+
+              {/* רשימת לינקים */}
+              <div className="flex-1 flex flex-col pt-8 px-8 space-y-6 overflow-y-auto">
+                <Link href="/" onClick={() => setIsOpen(false)} className="text-gray-900 text-xl font-bold border-b border-gray-50 pb-4 active:text-[#FF5100]">בית</Link>
+                <Link href="/about-us" onClick={() => setIsOpen(false)} className="text-gray-900 text-xl font-bold border-b border-gray-50 pb-4">הפתרון בקצרה</Link>
+                <Link href="#process" onClick={() => setIsOpen(false)} className="text-gray-900 text-xl font-bold border-b border-gray-50 pb-4">התהליך</Link>
+                <Link href="#services" onClick={() => setIsOpen(false)} className="text-gray-900 text-xl font-bold border-b border-gray-50 pb-4">שירותים</Link>
+                <Link href="#why-us" onClick={() => setIsOpen(false)} className="text-gray-900 text-xl font-bold border-b border-gray-50 pb-4">למה אנחנו</Link>
+                <Link href="#faq" onClick={() => setIsOpen(false)} className="text-gray-900 text-xl font-bold border-b border-gray-50 pb-4">שאלות נפוצות</Link>
+              </div>
+
+              {/* פוטר עם טלפון מקובע למטה */}
+              <div className="p-8 bg-gray-50 flex justify-center items-center gap-3">
+                <span className="text-black font-bold text-lg tracking-wide">0523409255</span>
+                <div className="bg-[#FF5100]/10 p-2 rounded-full">
+                  <Phone size={18} className="text-[#FF5100]" />
+                </div>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </>
@@ -105,14 +147,11 @@ export default function DeliveryNowLanding() {
     <div className="min-h-screen bg-[#1A1C1E] text-white font-sans antialiased overflow-x-hidden selection:bg-[#FF5100] selection:text-white" dir="rtl">
       <Navbar />
       
-      {/* ProgressBar */}
       <motion.div className="fixed top-0 left-0 right-0 h-1 bg-[#FF5100] origin-right z-[301]" style={{ scaleX }} />
 
-      {/* Hero Section - Using a Deep Charcoal instead of Black */}
       <section className="relative min-h-screen flex items-center justify-center px-6">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-b from-[#1A1C1E]/80 via-[#1A1C1E]/40 to-[#1A1C1E] z-10" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/5 blur-[120px] rounded-full z-0" />
           <img src="/landing_page.png" alt="Background" className="w-full h-full object-cover brightness-[0.4]" />
         </div>
         
@@ -120,12 +159,17 @@ export default function DeliveryNowLanding() {
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-6xl md:text-8xl font-black leading-tight italic mb-6 text-white"
+            className="text-4xl xs:text-5xl sm:text-6xl md:text-8xl font-black leading-[1.2] md:leading-[1.1] italic mb-8 text-white uppercase break-words"
           >
-            שליחויות <br />
-            לעסקים - <span className="text-[#FF5100]">בלי</span> <br />
-            <span className="text-[#FF5100]">לרדוף</span> אחרי אף <br />
-            אחד
+            <span className="block">שליחויות</span>
+            
+            <span className="block">
+              לעסקים/פרטיים - <span className="text-[#FF5100] inline-block px-1">בלי</span>
+            </span>
+
+            <span className="text-[#FF5100] block">לרדוף</span>
+            
+            <span className="block">אחרי אף אחד</span>
           </motion.h1>
 
           <motion.p 
@@ -138,17 +182,14 @@ export default function DeliveryNowLanding() {
           </motion.p>
           
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex flex-wrap gap-4 justify-center">
-            <Link href="/order" className="bg-[#FF5100] text-white px-10 py-4 rounded-full font-black text-xl shadow-lg hover:shadow-[#FF5100]/20 hover:scale-105 transition-all flex items-center gap-3">
+            <Link href="/order" className="bg-[#FF5100] text-white px-10 py-4 rounded-full font-black text-xl shadow-lg hover:scale-105 transition-all flex items-center gap-3">
               <Zap className="fill-current w-6 h-6" /> הזמינו עכשיו
-            </Link>
-            <Link href="#how-it-works" className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-10 py-4 rounded-full font-black text-xl hover:bg-white/20 transition-all">
-              איך זה עובד?
             </Link>
           </motion.div>
         </div>
       </section>
 
-      {/* Package Types - Changed bg-white to bg-slate-50 (Soft Gray) */}
+      {/* Package Types Section */}
       <section className="py-20 px-6 bg-[#F8FAFC]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -160,10 +201,10 @@ export default function DeliveryNowLanding() {
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { label: "מעטפה", sub: "מסמכים וניירת", icon: <Mail size={32} />, type: "envelope" },
-              { label: "קטן", sub: "עד 2 ק״ג", icon: <Box size={32} />, type: "small" },
-              { label: "בינוני", sub: "עד 10 ק״ג", icon: <Package size={32} />, type: "medium" },
-              { label: "גדול", sub: "חבילות כבדות", icon: <Truck size={32} />, type: "large" }
+              { label: "מעטפה", sub: "גודל", icon: <Mail size={32} />, type: "envelope" },
+              { label: "קטן", sub: "שקית קטנה / עד 2 ק״ג", icon: <ShoppingBag size={32} />, type: "small" },
+              { label: "בינוני", sub: "קרטון קטן / עד 10 ק״ג", icon: <Package size={32} />, type: "medium" },
+              { label: "גדול", sub: "קרטון גדול / חבילה כבדה", icon: <Archive size={32} />, type: "large" }
             ].map((pkg, i) => (
               <Link key={i} href={`/order?type=${pkg.type}`}>
                 <motion.div 
@@ -175,9 +216,6 @@ export default function DeliveryNowLanding() {
                   </div>
                   <h3 className="text-2xl font-black text-[#1A1C1E] mb-2">{pkg.label}</h3>
                   <p className="text-slate-500 font-medium text-sm">{pkg.sub}</p>
-                  <div className="mt-6 text-[#FF5100] opacity-0 group-hover:opacity-100 transition-opacity">
-                    <ArrowRight size={24} />
-                  </div>
                 </motion.div>
               </Link>
             ))}
@@ -185,7 +223,7 @@ export default function DeliveryNowLanding() {
         </div>
       </section>
 
-      {/* Stats Section - Using the deep charcoal background */}
+      {/* Stats Section */}
       <section className="py-24 px-6 bg-[#1A1C1E]">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-6">
           {[
@@ -204,7 +242,7 @@ export default function DeliveryNowLanding() {
         </div>
       </section>
 
-      {/* Process Section - Using a slightly lighter charcoal for depth */}
+      {/* Process Section */}
       <section id="how-it-works" className="py-32 px-6 bg-white/[0.03] border-y border-white/5">
         <div className="max-w-7xl mx-auto">
           <div className="mb-20 text-right">
@@ -218,7 +256,7 @@ export default function DeliveryNowLanding() {
         </div>
       </section>
 
-      {/* CTA Section - Vibrant Orange stays */}
+      {/* Final CTA */}
       <section className="py-40 px-6 bg-[#FF5100] text-white overflow-hidden">
         <div className="max-w-7xl mx-auto text-center relative">
           <h2 className="text-[10vw] font-black italic leading-none mb-12 uppercase drop-shadow-lg">DELIVERY NOW.</h2>
@@ -228,7 +266,7 @@ export default function DeliveryNowLanding() {
         </div>
       </section>
 
-      {/* Footer - Slate background */}
+      {/* Footer */}
       <footer className="py-20 px-6 bg-[#1A1C1E] border-t border-white/5">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-center md:text-right gap-10">
           <div>
