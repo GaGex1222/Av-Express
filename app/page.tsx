@@ -183,6 +183,7 @@ export default function DeliveryNowLanding() {
       </a>
 
       {/* HERO SECTION */}
+{/* HERO SECTION */}
       <section className="relative min-h-screen w-full flex items-center justify-center px-6 overflow-hidden">
         {/* Background Image Container - stretched to cover everything */}
         <div className="absolute inset-0 w-full h-full">
@@ -200,8 +201,8 @@ export default function DeliveryNowLanding() {
             animate={{ opacity: 1, y: 0 }} 
             className="text-4xl md:text-7xl lg:text-6xl font-black leading-tight mb-8 text-white uppercase tracking-tighter"
           >
-            שליחויות <br />
-            לעסקים ופרטיים - <span className="text-[#FF5100]">בלי</span> <br />
+            שליחויות רכב <br />
+            לחנויות ומסעדות - <span className="text-[#FF5100]">בלי</span> <br />
             <span className="text-[#FF5100]">לרדוף</span> אחרי אף אחד
           </motion.h1>
 
@@ -211,14 +212,15 @@ export default function DeliveryNowLanding() {
             transition={{ delay: 0.4 }} 
             className="text-lg md:text-2xl font-bold text-slate-100 mb-12 max-w-2xl mx-auto drop-shadow-md"
           >
-            הפתרון הלוגיסטי המהיר בישראל. מזמינים שליח ב-60 שניות, מקבלים אישור מסירה בזמן אמת.
+            מארזים גדולים? ארגזי שתייה? פרחים? <br />
+            צי הרכבים שלנו מוכן למשימה. מהיר, בטוח ומקצועי.
           </motion.p>
           
           <motion.div 
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ delay: 0.5 }} 
-            className="flex flex-wrap gap-4 justify-center"
+            className="flex flex-col items-center gap-4"
           >
             <Link 
               href="/order" 
@@ -226,6 +228,11 @@ export default function DeliveryNowLanding() {
             >
               <Zap className="fill-current" /> הזמינו עכשיו
             </Link>
+            
+            {/* הכיתוב החדש שהוספת */}
+            <span className="text-white/70 text-xs md:text-sm font-medium tracking-wide italic">
+              * על פי זמינות בלבד
+            </span>
           </motion.div>
         </div>
       </section>
