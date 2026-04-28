@@ -8,7 +8,9 @@ import {
   Package, ShoppingBag, 
   ShieldCheck, MessageCircle, Truck, FileText, 
   ClipboardCheck, PackageCheck, ChevronDown,
-  XCircle, CheckCircle
+  XCircle, CheckCircle, Smartphone, MapPin, Receipt, BellRing,
+  Motorbike,
+  Car
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -57,6 +59,7 @@ const Navbar = () => {
 
           <div className="hidden md:flex items-center gap-8 font-bold text-sm uppercase tracking-wide">
             <Link href="/" className="text-[#0F172A] hover:text-[#FF5100] transition-colors">בית</Link>
+            <Link href="#how-it-works" className="text-[#0F172A]/70 hover:text-[#FF5100] transition-colors">איך זה עובד</Link>
             <Link href="#services" className="text-[#0F172A]/70 hover:text-[#FF5100] transition-colors">שירותים</Link>
             <Link href="#target-audience" className="text-[#0F172A]/70 hover:text-[#FF5100] transition-colors">למי זה מתאים</Link>
             <Link href="#faq" className="text-[#0F172A]/70 hover:text-[#FF5100] transition-colors">שאלות נפוצות</Link>
@@ -89,12 +92,10 @@ const Navbar = () => {
               className="fixed top-0 right-0 bottom-0 w-full z-[999] bg-[#F1F7FC] flex flex-col md:hidden" 
               dir="rtl"
             >
-              {/* Header with Close Button on the FAR LEFT and Logo on the RIGHT */}
               <div className="flex justify-between items-center p-6 bg-white/50">
                 <button onClick={() => setIsOpen(false)} className="text-slate-400 border-2 border-slate-200 rounded-full p-1">
                   <X size={20} />
                 </button>
-                
                 <div className="flex items-center gap-3">
                    <span className="text-2xl font-black text-[#0F172A] tracking-tighter">
                      DELIVERY <span className="text-[#FF5100]">NOW</span>
@@ -105,15 +106,13 @@ const Navbar = () => {
                 </div>
               </div>
 
-              {/* Navigation Links - Big Bold Text leaning Right */}
               <div className="flex-1 flex flex-col justify-center items-end px-10 space-y-10">
                 <Link href="/" onClick={() => setIsOpen(false)} className="text-4xl font-black text-[#0F172A] hover:text-[#FF5100] transition-colors">בית</Link>
+                <Link href="#how-it-works" onClick={() => setIsOpen(false)} className="text-4xl font-black text-[#0F172A] hover:text-[#FF5100] transition-colors">איך זה עובד</Link>
                 <Link href="#services" onClick={() => setIsOpen(false)} className="text-4xl font-black text-[#0F172A] hover:text-[#FF5100] transition-colors">שירותים</Link>
-                <Link href="#target-audience" onClick={() => setIsOpen(false)} className="text-4xl font-black text-[#0F172A] hover:text-[#FF5100] transition-colors">למי זה מתאים</Link>
                 <Link href="#faq" onClick={() => setIsOpen(false)} className="text-4xl font-black text-[#0F172A] hover:text-[#FF5100] transition-colors">שאלות נפוצות</Link>
               </div>
 
-              {/* Bottom Section */}
               <div className="p-8 space-y-6 border-t border-slate-200 bg-white/30 text-center">
                 <Link 
                   href="/order" 
@@ -122,9 +121,8 @@ const Navbar = () => {
                 >
                   הזמן שליח עכשיו
                 </Link>
-                
                 <div className="flex flex-col items-center gap-1">
-                  <span className="text-slate-400 font-bold text-xs uppercase tracking-widest">זמינים עבורכם בטלפון</span>
+                  <span className="text-slate-400 font-bold text-xs uppercase tracking-widest ">על פי זמינות</span>
                   <a href="tel:0523409255" className="text-3xl font-black text-[#0F172A] tracking-tighter">052-3409255</a>
                 </div>
               </div>
@@ -133,49 +131,6 @@ const Navbar = () => {
         )}
       </AnimatePresence>
     </>
-  );
-};
-
-// Update to the Hero section buttons and checklist
-const HeroSection = () => {
-  return (
-    <section className="relative min-h-[90vh] flex items-center justify-center px-6 pt-20">
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-slate-900/60 z-10" />
-        <img src="/landing_page.png" alt="Background" className="w-full h-full object-cover" />
-      </div>
-      
-      <div className="max-w-4xl mx-auto text-center relative z-20">
-        <h1 className="text-4xl md:text-6xl font-black text-white mb-6">
-          שליחויות לעסקים - <span className="text-[#FF5100]">בלי לרדוף</span> אחרי אף אחד
-        </h1>
-        
-        <p className="text-white/80 font-medium mb-10 max-w-2xl mx-auto">
-          נמאס לכם להתקשר, לחכות למענה, ולא לדעת איפה החבילה? תוך דקה אחת סוגרים איסוף - רואים שנכנס, מקבלים עדכון בדרך, ומקבלים בשקט.
-        </p>
-
-        <div className="flex flex-wrap gap-4 justify-center mb-12">
-          <Link href="/order" className="bg-[#FF5100] text-white px-8 py-4 rounded-2xl font-black text-lg flex items-center gap-2">
-            הזמן שליחות עכשיו <Zap size={18} fill="currentColor" />
-          </Link>
-          <Link href="#services" className="bg-white/10 backdrop-blur-md text-white border border-white/30 px-8 py-4 rounded-2xl font-black text-lg">
-            איך זה עובד?
-          </Link>
-        </div>
-
-        <div className="flex flex-wrap justify-center gap-6 text-white/70 text-xs font-bold">
-           <div className="flex items-center gap-2">
-            <CheckCircle2 size={16} className="text-[#FF5100]" /> הזמנה תוך דקה
-           </div>
-           <div className="flex items-center gap-2">
-            <CheckCircle2 size={16} className="text-[#FF5100]" /> עדכונים בזמן אמת
-           </div>
-           <div className="flex items-center gap-2">
-            <CheckCircle2 size={16} className="text-[#FF5100]" /> מענה מקצועי ומהיר
-           </div>
-        </div>
-      </div>
-    </section>
   );
 };
 
@@ -228,90 +183,128 @@ export default function DeliveryNowLanding() {
       </a>
 
       {/* HERO SECTION */}
-      <section className="relative min-h-[90vh] md:min-h-screen flex items-center justify-center px-6 pt-20">
-        <div className="absolute inset-0">
+      <section className="relative min-h-screen w-full flex items-center justify-center px-6 overflow-hidden">
+        {/* Background Image Container - stretched to cover everything */}
+        <div className="absolute inset-0 w-full h-full">
           <div className="absolute inset-0 bg-slate-900/60 z-10" />
-          <img src="/landing_page.png" alt="Background" className="w-full h-full object-cover" />
+          <img 
+            src="/landing_page.png" 
+            alt="Background" 
+            className="w-full h-full object-cover object-center" 
+          />
         </div>
         
-        <div className="max-w-4xl mx-auto text-center relative z-20">
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-4xl md:text-7xl lg:text-6xl font-black leading-tight mb-8 text-white uppercase tracking-tighter">
+        <div className="max-w-4xl mx-auto text-center relative z-20 pt-20 pb-10">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            className="text-4xl md:text-7xl lg:text-6xl font-black leading-tight mb-8 text-white uppercase tracking-tighter"
+          >
             שליחויות <br />
             לעסקים ופרטיים - <span className="text-[#FF5100]">בלי</span> <br />
             <span className="text-[#FF5100]">לרדוף</span> אחרי אף אחד
           </motion.h1>
 
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="text-lg md:text-2xl font-bold text-slate-100 mb-12 max-w-2xl mx-auto drop-shadow-md">
+          <motion.p 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            transition={{ delay: 0.4 }} 
+            className="text-lg md:text-2xl font-bold text-slate-100 mb-12 max-w-2xl mx-auto drop-shadow-md"
+          >
             הפתרון הלוגיסטי המהיר בישראל. מזמינים שליח ב-60 שניות, מקבלים אישור מסירה בזמן אמת.
           </motion.p>
           
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex flex-wrap gap-4 justify-center">
-            <Link href="/order" className="bg-[#FF5100] text-white px-10 py-4 md:px-12 md:py-5 rounded-full font-black text-xl md:text-2xl shadow-2xl hover:bg-white hover:text-[#FF5100] transition-all flex items-center gap-3">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: 0.5 }} 
+            className="flex flex-wrap gap-4 justify-center"
+          >
+            <Link 
+              href="/order" 
+              className="bg-[#FF5100] text-white px-10 py-4 md:px-12 md:py-5 rounded-full font-black text-xl md:text-2xl shadow-2xl hover:bg-white hover:text-[#FF5100] transition-all flex items-center gap-3"
+            >
               <Zap className="fill-current" /> הזמינו עכשיו
             </Link>
           </motion.div>
         </div>
       </section>
 
-      {/* MAIN CONTENT WRAPPER - Reduced max-width for "Zoomed Out" feel on desktop */}
-      <div className="max-w-6xl mx-auto px-6">
-        
-        {/* SERVICES GRID */}
-        <section id="services" className="py-24">
+      {/* HOW IT WORKS SECTION */}
+      <section id="how-it-works" className="py-24 bg-[#F8FAFC]">
+        <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
-            <span className="bg-[#0056D2] text-white px-4 py-1 rounded-full text-sm font-bold mb-4 inline-block">השירותים שלנו</span>
-            <h2 className="text-4xl md:text-5xl font-black text-[#0F172A] mb-6">כל סוג שליחות שהעסק שלך צריך</h2>
-            <p className="max-w-2xl mx-auto text-slate-500 font-medium text-lg">
-              מסמכים דחופים, חבילות קטנות, והפצות קבועות - הכל תחת קורת גג אחת.
-            </p>
+            <h2 className="text-4xl md:text-5xl font-black text-[#0F172A] mb-4 ">איך זה עובד?</h2>
+            <p className="text-slate-500 font-bold text-lg">ארבעה שלבים פשוטים והחבילה ביעד</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { 
-                label: "שליחות דחופה", 
-                sub: "יוצאת תוך דקות", 
-                icon: <Truck size={40} />, 
-                desc: "כשיש מסמך שחייב להגיע היום - אנחנו מוציאים שליח מהר ומטפלים בזה בשקט.",
-                tag: "הכי מבוקש"
-              },
-              { 
-                label: "חבילות קטנות", 
-                sub: "שלמות ובזמן", 
-                icon: <Package size={40} />, 
-                desc: "מוצרים, ציוד, פריטים קטנים - אנחנו מאספים ומעבירים ישירות לכתובת הלקוח."
-              },
-              { 
-                label: "מסמכים ומעטפות", 
-                sub: "בשלמותם, בזמן", 
-                icon: <FileText size={40} />, 
-                desc: "מסמכים משפטיים וחוזים - מטופלים בזהירות ומועברים ישירות ליעד."
-              }
-            ].map((service, i) => (
-              <motion.div key={i} variants={fadeInUp} initial="initial" whileInView="whileInView" className="bg-white border border-slate-200 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all group">
-                <div className="bg-[#003594] p-10 flex justify-center text-white relative">
-                  {service.tag && <span className="absolute top-4 right-4 bg-[#FF5100] text-white text-[10px] font-black px-3 py-1 rounded-md">הכי מבוקש</span>}
-                  <div className="bg-white/10 p-5 rounded-full group-hover:scale-110 transition-transform">
-                    {service.icon}
+          <div className="relative">
+            <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 border-t-2 border-dashed border-slate-300 -translate-y-1/2 z-0" />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
+              {[
+                { 
+                  step: "01", 
+                  title: "לקוח מזמין", 
+                  desc: "מזינים פרטים באתר וסוגרים משלוח תוך פחות מ-60 שניות.", 
+                  icon: <Smartphone size={32} className="text-[#FF5100]" /> 
+                },
+                { 
+                  step: "02", 
+                  title: "איסוף החבילה", 
+                  desc: "השליח מגיע לאסוף. הודעה נשלחת אליכם בזמן אמת ברגע האיסוף.", 
+                  icon: <Package size={32} className="text-[#FF5100]" /> 
+                },
+                { 
+                  step: "03", 
+                  title: "יוצא למסירה", 
+                  desc: "השליח יוצא ישירות לנקודת היעד ללא עיכובים מיותרים.", 
+                  icon: <Car size={32} className="text-[#FF5100]" /> 
+                },
+                { 
+                  step: "04", 
+                  title: "מסירה ליעד", 
+                  desc: "החבילה נמסרה! הודעת אישור נשלחת אליכם מיד עם סיום המשימה.", 
+                  icon: <BellRing size={32} className="text-[#FF5100]" /> 
+                }
+              ].map((item, i) => (
+                <motion.div 
+                  key={i} 
+                  variants={fadeInUp} 
+                  initial="initial" 
+                  whileInView="whileInView"
+                  className="flex flex-col items-center text-center bg-white p-8 rounded-3xl shadow-sm border border-slate-100 h-full"
+                >
+                  <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mb-6 border border-orange-100">
+                    {item.icon}
                   </div>
-                </div>
-                <div className="p-8 text-center">
-                  <h3 className="text-xl font-black text-[#0F172A] mb-2">{service.label}</h3>
-                  <h4 className="text-[#0056D2] font-black mb-4 text-sm">{service.sub}</h4>
-                  <p className="text-slate-500 font-medium text-sm leading-relaxed">{service.desc}</p>
-                </div>
-              </motion.div>
-            ))}
+                  <span className="text-[#FF5100] font-black text-sm mb-2">{item.step}</span>
+                  <h3 className="text-2xl font-black text-[#0F172A] mb-4">{item.title}</h3>
+                  <p className="text-slate-500 font-medium leading-relaxed">{item.desc}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </section>
+
+          <div className="mt-16 text-center">
+            {/* כפתור שונה לכתום */}
+            <Link href="/order" className="bg-[#FF5100] text-white px-12 py-5 rounded-full font-black text-xl hover:bg-white hover:text-[#FF5100] border-2 border-transparent hover:border-[#FF5100] transition-all inline-flex items-center gap-3 shadow-xl">
+              הזמן שליח עכשיו <ArrowRight />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* SELLING CONTENT & BENEFITS */}
+      <div className="max-w-6xl mx-auto px-6">
 
         {/* TARGET AUDIENCE SECTION */}
         <section id="target-audience" className="py-20 bg-[#D9EFFF] rounded-[3rem] px-8 md:px-16 mb-24">
             <div className="text-center mb-16">
               <span className="text-[#0056D2] font-black text-sm uppercase tracking-widest mb-4 block">למי זה מתאים</span>
               <h2 className="text-3xl md:text-4xl font-black text-[#0F172A] mb-6">
-                משרדי עורכי דין, רואי חשבון וחנויות - 
-                <span className="text-[#0056D2]"> אם אתם מוציאים מסמכים כל יום, זה בשבילכם.</span>
+                 מסעדות, סופרמרקטים, עסקים, פרטיים, 
+                <span className="text-[#0056D2]"> אם אתם עמוסים במשלוחים כל יום - זה בשבילכם.</span>
               </h2>
             </div>
 
@@ -323,10 +316,10 @@ export default function DeliveryNowLanding() {
                 </div>
                 <ul className="space-y-5">
                   {[
-                    "צריכים שליחויות מהיום-להיום",
-                    "נמאס לכם לרדוף אחרי חברות",
-                    "רוצים לדעת איפה החבילה שלכם",
-                    "חשוב לכם שירות אישי ומקצועי"
+                    "צריכים שליחויות מהיום להיום/מעכשיו לעכשיו.",
+                    "צריכים שליח עם רכב לחבילות גדולות.",
+                    "צריכים שליח מקצועי, מהיר, אחראי ואמין.",
+                    "רוצים להיות בטוחים שהחבילה נמסרה לנמען בבטחה."
                   ].map((item, i) => (
                     <li key={i} className="flex items-start gap-4 text-slate-600 font-bold text-sm md:text-base">
                       <CheckCircle2 className="text-[#0056D2] shrink-0 mt-1" size={18} />
@@ -399,26 +392,29 @@ export default function DeliveryNowLanding() {
         </section>
       </div>
 
-      {/* FINAL CTA - RESIZED */}
+      {/* FINAL CTA - Blue Background */}
       <section className="py-24 px-6 bg-[#003594] text-white text-center relative overflow-hidden">
         <div className="max-w-4xl mx-auto relative z-10">
-          <h2 className="text-4xl md:text-5xl font-black mb-10">צריכים שליח עכשיו?</h2>
+          <h2 className="text-4xl md:text-5xl font-black mb-10 ">צריכים שליח עכשיו?</h2>
           <Link href="/order" className="bg-[#FF5100] text-white px-10 py-4 rounded-full font-black text-lg md:text-xl hover:scale-105 transition-all inline-flex items-center gap-4 shadow-2xl">
             שלחו הודעה ונסגור הכל <ArrowRight size={24} />
           </Link>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="py-12 px-6 bg-slate-900 text-white text-center">
+      {/* FOOTER - Matching Deep Blue/Slate */}
+      <footer className="py-12 px-6 bg-slate-950 text-white text-center border-t border-white/5">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="text-xl font-black">DELIVERY<span className="text-[#FF5100]">NOW</span></div>
           <div className="flex gap-8 font-bold text-slate-400 text-sm">
             <Link href="/" className="hover:text-white">בית</Link>
             <Link href="#faq" className="hover:text-white">שאלות נפוצות</Link>
-            <Link href="tel:0523409255" className="hover:text-[#FF5100]">052-3409255</Link>
+            <div className="flex flex-col items-center md:items-end">
+              <span className="text-[10px] uppercase text-slate-500 ">על פי זמינות</span>
+              <Link href="tel:0523409255" className="hover:text-[#FF5100]">052-3409255</Link>
+            </div>
           </div>
-          <p className="text-slate-500 text-xs">© 2026 DeliveryNow. כל הזכויות שמורות.</p>
+          <p className="text-slate-500 text-xs font-medium">© 2026 DeliveryNow. כל הזכויות שמורות.</p>
         </div>
       </footer>
     </div>
