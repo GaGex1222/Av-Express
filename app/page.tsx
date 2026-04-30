@@ -179,15 +179,15 @@ export default function DeliveryNowLanding() {
 
       {/* WhatsApp FAB */}
       <a href="https://wa.me/972523409255" target="_blank" rel="noopener" className="fixed bottom-6 left-6 z-[400] bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform">
-        <MessageCircle size={30} className="fill-current" />
+        <MessageCircle size={20} className="fill-current" />
       </a>
 
       {/* HERO SECTION */}
 {/* HERO SECTION */}
- <section className="relative min-h-screen w-full flex items-center justify-center px-6 overflow-hidden">
+<section className="relative min-h-screen w-full flex items-center justify-center px-6 overflow-hidden">
   {/* Background Image Container */}
   <div className="absolute inset-0 w-full h-full">
-    <div className="absolute inset-0 bg-slate-900/60 z-10" />
+    <div className="absolute inset-0 bg-slate-900/65 z-10" />
     <img 
       src="/landing_page.png" 
       alt="Background" 
@@ -195,50 +195,66 @@ export default function DeliveryNowLanding() {
     />
   </div>
   
-  <div className="max-w-4xl mx-auto text-center relative z-20 pt-20 pb-10">
-    <motion.span 
+  {/* הוספת mt-12 או mt-20 כדי להוריד את כל הגוש למטה */}
+  <div className="max-w-4xl mx-auto text-center relative z-20 pt-32 pb-10 mt-2">
+    {/* קבוצת כותרת עליונה */}
+    <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.2 }}
-      className="inline-block text-[#FF5100] font-bold tracking-[0.2em] uppercase mb-4 text-sm md:text-base border-b-2 border-[#FF5100]/30 pb-1"
+      className="mb-10 inline-block relative"
     >
-      שליח פרטי
-    </motion.span>
+      {/* שלישיית הצ'ופצ'יקים */}
+      <div className="absolute -left-6 -top-2 flex gap-1 rotate-[-15deg]">
+        <div className="w-1 h-3.5 bg-[#FF5100] rounded-full opacity-70" />
+        <div className="w-1 h-3.5 bg-[#FF5100] rounded-full translate-y-1.5" />
+        <div className="w-1 h-3.5 bg-[#FF5100] rounded-full translate-y-3" />
+      </div>
+      
+      <span className="block text-white font-black text-4xl md:text-5xl lg:text-6xl tracking-tighter italic drop-shadow-xl">
+        שליח פרטי
+      </span>
+      
+      <span className="block text-[#FF5100] font-bold text-xs md:text-sm tracking-[0.3em] uppercase mt-2 opacity-90">
+        מעכשיו לעכשיו
+      </span>
+    </motion.div>
 
-    <motion.h1 
+    {/* כותרת משנית */}
+    <motion.h2 
       initial={{ opacity: 0, y: 20 }} 
       animate={{ opacity: 1, y: 0 }} 
-      className="text-4xl md:text-7xl lg:text-6xl font-black leading-tight mb-8 text-white uppercase tracking-tighter"
+      transition={{ delay: 0.2 }}
+      className="text-2xl md:text-4xl lg:text-5xl font-bold leading-tight mb-8 text-white tracking-tight"
     >
-      שליחויות רכב <br />
-      לחנויות ומסעדות - <span className="text-[#FF5100]">בלי</span> <br />
-      <span className="text-[#FF5100]">לרדוף</span> אחרי אף אחד
-    </motion.h1>
+      לעסקים ופרטיים - <span className="text-[#FF5100] font-black">בלי</span> <br />
+      <span className="text-[#FF5100] font-black">לרדוף</span> אחרי אף אחד
+    </motion.h2>
 
-    {/* הטקסט המעודכן מהתמונה */}
+    {/* פירוט */}
     <motion.p 
       initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }} 
       transition={{ delay: 0.4 }} 
-      className="text-lg md:text-2xl font-bold text-slate-100 mb-12 max-w-2xl mx-auto drop-shadow-md leading-relaxed"
+      className="text-base md:text-lg lg:text-xl font-medium text-slate-200 mb-12 max-w-xl mx-auto leading-relaxed drop-shadow-sm"
     >
-      ארגזים, ציוד אישי, פרחים, או כל דבר שמעוניינים לשלוח! זמין מנתניה והסביבה לכל חלקי הארץ.
+      ארגזים, ציוד אישי, פרחים, או כל דבר שמעוניינים לשלוח! <br className="hidden md:block" />
+      זמין מנתניה והסביבה לכל חלקי הארץ.
     </motion.p>
     
     <motion.div 
       initial={{ opacity: 0, y: 20 }} 
       animate={{ opacity: 1, y: 0 }} 
       transition={{ delay: 0.5 }} 
-      className="flex flex-col items-center gap-4"
+      className="flex flex-col items-center gap-6"
     >
       <Link 
         href="/order" 
-        className="bg-[#FF5100] text-white px-10 py-4 md:px-12 md:py-5 rounded-full font-black text-xl md:text-2xl shadow-2xl hover:bg-white hover:text-[#FF5100] transition-all flex items-center gap-3"
+        className="bg-[#FF5100] text-white px-10 py-4 rounded-full font-black text-lg md:text-2xl shadow-[0_10px_40px_rgba(255,81,0,0.4)] hover:scale-105 transition-all flex items-center gap-2"
       >
-        <Zap className="fill-current" /> הזמינו עכשיו
+        הזמינו עכשיו <Zap className="fill-current w-5 h-5 md:w-6 md:h-6" />
       </Link>
       
-      <span className="text-white/70 text-xs md:text-sm font-medium tracking-wide italic">
+      <span className="text-white/40 text-[10px] md:text-xs font-bold tracking-widest uppercase">
         * על פי זמינות בלבד
       </span>
     </motion.div>

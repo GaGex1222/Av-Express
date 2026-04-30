@@ -25,8 +25,8 @@ const PRICE_PER_KM = 5.5;
 const SIZES = [
   { id: 'מעטפה', label: 'מעטפה', price: 35, icon: <Mail size={18} />, desc: 'עד 0.25 ק"ג' },
   { id: 'קטן', label: 'קטנה', price: 45, icon: <ShoppingBag size={18} />, desc: 'עד 5 ק"ג' },
-  { id: 'בינוני', label: 'בינונית', price: 60, icon: <Cuboid size={18} />, desc: 'עד 10 ק"ג' },
-  { id: 'גדול', label: 'גדולה', price: 75, icon: <Package size={18} />, desc: 'עד 20 ק"ג' },
+  { id: 'בינוני', label: 'בינונית', price: 60, icon: <Cuboid size={25} />, desc: 'עד 10 ק"ג' },
+  { id: 'גדול', label: 'גדולה', price: 75, icon: <Package size={25} />, desc: 'עד 20 ק"ג' },
 ];
 
 // פונקציית עזר לולידציה של טלפון ישראלי[cite: 1]
