@@ -28,8 +28,8 @@ const PRICE_PER_KM = 5.5;
 const SIZES = [
   { id: 'מעטפה', label: 'מעטפה', price: 35, icon: <Mail size={22} />, weight: 'עד 0.25 ק"ג', dimensions: '20x20' },
   { id: 'קטן', label: 'קטן', price: 45, icon: <ShoppingBag size={22} />, weight: 'עד 5 ק"ג', dimensions: '30x30' },
-  { id: 'בינוני', label: 'בינוני', price: 60, icon: <Cuboid size={28} />, weight: 'עד 10 ק"ג', dimensions: '40x40' },
-  { id: 'גדול', label: 'גדול', price: 75, icon: <Package size={28} />, weight: 'עד 20 ק"ג', dimensions: '50x50' },
+  { id: 'בינוני', label: 'בינוני', price: 60, icon: <Cuboid size={35} />, weight: 'עד 10 ק"ג', dimensions: '40x40' },
+  { id: 'גדול', label: 'גדול', price: 75, icon: <Package size={35} />, weight: 'עד 20 ק"ג', dimensions: '50x50' },
 ];
 
 const isValidIsraeliPhone = (phone: string) => {
