@@ -217,23 +217,35 @@ export default function ProfessionalOrderPage() {
         </button>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 md:p-6 bg-white/95 backdrop-blur-md border-t border-slate-100 flex items-center justify-between shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-50 overflow-hidden">
-        <div className="flex items-center gap-3 md:gap-8 min-w-0">
-          <div className="flex flex-col">
-            <span className="text-[10px] text-slate-400 font-black uppercase tracking-wider whitespace-nowrap">סה"כ לתשלום</span>
-            <div className="text-2xl md:text-4xl font-black truncate" style={{ color: COLORS.secondary }}>₪{totalPrice}</div>
+{/* Sticky Footer - תיקון מרווחים ויחס בין מחיר לכפתור */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 md:p-6 bg-white/95 backdrop-blur-md border-t border-slate-100 flex items-center justify-between shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-50">
+        <div className="max-w-4xl mx-auto w-full flex items-center justify-between gap-4 md:gap-12">
+          
+          {/* אזור המחיר - נשאר קבוע ולא נדחס */}
+          <div className="flex items-center gap-3 md:gap-8 shrink-0">
+            <div className="flex flex-col">
+              <span className="text-[10px] md:text-xs text-slate-400 font-black uppercase tracking-wider whitespace-nowrap">סה"כ לתשלום</span>
+              <div className="text-2xl md:text-4xl font-black" style={{ color: COLORS.secondary }}>₪{totalPrice}</div>
+            </div>
+            <div className="hidden sm:block w-px h-10 bg-slate-100" />
           </div>
-          <div className="hidden xs:block w-px h-10 bg-slate-100 shrink-0" />
+          
+          {/* כפתור התשלום - גדל בהדרגה ושומר על מרווח */}
+          <button 
+            disabled={!isFormValid()}
+            className={`text-white px-6 md:px-16 h-14 md:h-18 rounded-full text-lg md:text-2xl font-black flex items-center justify-center gap-3 shadow-2xl transition-all active:scale-95 shrink-0 ${!isFormValid() ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+            style={{ 
+              backgroundColor: COLORS.primary, 
+              boxShadow: isFormValid() ? `0 10px 30px -5px ${COLORS.primary}66` : 'none',
+              minWidth: 'fit-content'
+            }}
+          >
+            <span className="whitespace-nowrap">המשך לתשלום</span>
+            <ArrowRight size={24} className="shrink-0 hidden md:block" />
+            <ArrowRight size={20} className="shrink-0 md:hidden" />
+          </button>
+
         </div>
-        
-        <button 
-          disabled={!isFormValid()}
-          className={`text-white px-6 md:px-12 h-14 md:h-16 rounded-full text-lg md:text-xl font-black flex items-center justify-center gap-2 md:gap-3 shadow-2xl transition-all active:scale-95 flex-1 md:flex-none max-w-[240px] md:max-w-none ${!isFormValid() ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
-          style={{ backgroundColor: COLORS.primary, boxShadow: isFormValid() ? `0 10px 25px -5px ${COLORS.primary}44` : 'none' }}
-        >
-          <span className="whitespace-nowrap">המשך לתשלום</span>
-          <ArrowRight size={20} className="shrink-0" />
-        </button>
       </div>
     </div>
   );
