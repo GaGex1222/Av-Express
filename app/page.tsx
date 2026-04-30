@@ -404,7 +404,7 @@ export default function DeliveryNowLanding() {
         <div className="max-w-4xl mx-auto relative z-10">
           <h2 className="text-4xl md:text-5xl font-black mb-10 ">צריכים שליח עכשיו?</h2>
           <Link href="/order" className="bg-[#FF5100] text-white px-10 py-4 rounded-full font-black text-lg md:text-xl hover:scale-105 transition-all inline-flex items-center gap-4 shadow-2xl">
-            שלחו הודעה ונסגור הכל <ArrowRight size={24} />
+            בואו נסגור הזמנה<ArrowRight size={24} />
           </Link>
         </div>
       </section>
