@@ -7,7 +7,9 @@ import {
   Package, Search, Plus, Trash2, ArrowRight, 
   Phone, User, Edit3, Check, Mail, 
   ShoppingBag,
-  Cuboid
+  Cuboid,
+  Zap,
+  Weight
 } from 'lucide-react';
 
 const libraries: ("places")[] = ["places"];
@@ -22,14 +24,14 @@ const COLORS = {
 
 const PRICE_PER_KM = 5.5;
 
+// עדכון מערך הגדלים עם תיאור ומשקל בולטים יותר
 const SIZES = [
-  { id: 'מעטפה', label: 'מעטפה', price: 35, icon: <Mail size={18} />, desc: 'עד 0.25 ק"ג' },
-  { id: 'קטן', label: 'קטנה', price: 45, icon: <ShoppingBag size={18} />, desc: 'עד 5 ק"ג' },
-  { id: 'בינוני', label: 'בינונית', price: 60, icon: <Cuboid size={25} />, desc: 'עד 10 ק"ג' },
-  { id: 'גדול', label: 'גדולה', price: 75, icon: <Package size={25} />, desc: 'עד 20 ק"ג' },
+  { id: 'מעטפה', label: 'מעטפה', price: 35, icon: <Mail size={22} />, weight: 'עד 0.25 ק"ג', dimensions: '20x20' },
+  { id: 'קטן', label: 'קטן', price: 45, icon: <ShoppingBag size={22} />, weight: 'עד 5 ק"ג', dimensions: '30x30' },
+  { id: 'בינוני', label: 'בינוני', price: 60, icon: <Cuboid size={28} />, weight: 'עד 10 ק"ג', dimensions: '40x40' },
+  { id: 'גדול', label: 'גדול', price: 75, icon: <Package size={28} />, weight: 'עד 20 ק"ג', dimensions: '50x50' },
 ];
 
-// פונקציית עזר לולידציה של טלפון ישראלי[cite: 1]
 const isValidIsraeliPhone = (phone: string) => {
   const regex = /^05\d{8}$/;
   return regex.test(phone);
@@ -48,7 +50,7 @@ interface DeliveryPoint {
 }
 
 export default function ProfessionalOrderPage() {
-  const [packageSize, setPackageSize] = useState('קטן');
+  const [packageSize, setPackageSize] = useState('');
   const [isSizeCollapsed, setIsSizeCollapsed] = useState(false);
   const [pickup, setPickup] = useState<DeliveryPoint>({
     id: 'pickup', address: '', apartment: '', floor: '', notes: '', contactName: '', contactPhone: ''
@@ -66,7 +68,6 @@ export default function ProfessionalOrderPage() {
     libraries, language: 'he', region: 'IL'
   });
 
-  // בדיקה אם כל הטפסים מלאים ותקינים כולל טלפון[cite: 1]
   const isFormValid = () => {
     const validatePoint = (p: DeliveryPoint) => 
       p.address && p.apartment && p.floor && p.contactName && isValidIsraeliPhone(p.contactPhone);
@@ -152,7 +153,7 @@ export default function ProfessionalOrderPage() {
                   <div>
                     <div className="text-slate-400 font-black text-[10px] uppercase mb-0.5">גודל משלוח</div>
                     <div className="text-slate-800 font-bold text-sm">
-                        {SIZES.find(s => s.id === packageSize)?.label} — {SIZES.find(s => s.id === packageSize)?.desc}
+                        {SIZES.find(s => s.id === packageSize)?.label} — {SIZES.find(s => s.id === packageSize)?.weight} ({SIZES.find(s => s.id === packageSize)?.dimensions})
                     </div>
                   </div>
                 </div>
@@ -165,15 +166,19 @@ export default function ProfessionalOrderPage() {
                   {SIZES.map((size) => (
                     <button
                       key={size.id}
-                      onClick={() => { setPackageSize(size.id); setTimeout(() => setIsSizeCollapsed(true), 400); }}
-                      className={`flex flex-col items-center justify-center gap-1 h-24 rounded-2xl font-bold transition-all border-2 ${
+                      onClick={() => { setPackageSize(size.id); setTimeout(() => setIsSizeCollapsed(true), 600); }}
+                      className={`flex flex-col items-center justify-center gap-1 h-32 rounded-3xl font-bold transition-all border-2 relative overflow-hidden ${
                         packageSize === size.id ? 'bg-white shadow-xl shadow-orange-100' : 'bg-slate-50 border-transparent text-slate-400'
                       }`}
                       style={packageSize === size.id ? { borderColor: COLORS.primary, color: COLORS.primary } : {}}
                     >
-                      <div className="p-2 rounded-full mb-1">{size.icon}</div>
-                      <span className="text-sm font-black">{size.label}</span>
-                      <span className="text-[10px] opacity-70">{size.desc}</span>
+                      <div className={`absolute top-0 right-0 px-2 py-0.5 text-[8px] font-black rounded-bl-lg ${packageSize === size.id ? 'bg-[#FF5100] text-white' : 'bg-slate-200 text-slate-500'}`}>
+                        {size.weight}
+                      </div>
+
+                      <div className={`p-2 rounded-full mb-1 transition-transform ${packageSize === size.id ? 'scale-110' : ''}`}>{size.icon}</div>
+                      <span className="text-base font-black leading-tight">{size.label}</span>
+                      <span className="text-[10px] opacity-70 px-2 leading-tight">{size.dimensions}</span>
                     </button>
                   ))}
                 </div>
@@ -212,20 +217,22 @@ export default function ProfessionalOrderPage() {
         </button>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/95 backdrop-blur-md border-t border-slate-100 flex items-center justify-between shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-50">
-        <div className="flex items-center gap-8">
-          <div className="w-px h-10 bg-slate-100" />
+      <div className="fixed bottom-0 left-0 right-0 p-4 md:p-6 bg-white/95 backdrop-blur-md border-t border-slate-100 flex items-center justify-between shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-50 overflow-hidden">
+        <div className="flex items-center gap-3 md:gap-8 min-w-0">
           <div className="flex flex-col">
-            <span className="text-[10px] text-slate-400 font-black uppercase tracking-wider">סה"כ לתשלום</span>
-            <div className="text-4xl font-black" style={{ color: COLORS.secondary }}>₪{totalPrice}</div>
+            <span className="text-[10px] text-slate-400 font-black uppercase tracking-wider whitespace-nowrap">סה"כ לתשלום</span>
+            <div className="text-2xl md:text-4xl font-black truncate" style={{ color: COLORS.secondary }}>₪{totalPrice}</div>
           </div>
+          <div className="hidden xs:block w-px h-10 bg-slate-100 shrink-0" />
         </div>
+        
         <button 
           disabled={!isFormValid()}
-          className={`text-white px-12 h-16 rounded-full text-xl font-black flex items-center gap-3 shadow-2xl transition-all active:scale-95 ${!isFormValid() ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+          className={`text-white px-6 md:px-12 h-14 md:h-16 rounded-full text-lg md:text-xl font-black flex items-center justify-center gap-2 md:gap-3 shadow-2xl transition-all active:scale-95 flex-1 md:flex-none max-w-[240px] md:max-w-none ${!isFormValid() ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
           style={{ backgroundColor: COLORS.primary, boxShadow: isFormValid() ? `0 10px 25px -5px ${COLORS.primary}44` : 'none' }}
         >
-          המשך לתשלום <ArrowRight size={22}/>
+          <span className="whitespace-nowrap">המשך לתשלום</span>
+          <ArrowRight size={20} className="shrink-0" />
         </button>
       </div>
     </div>
