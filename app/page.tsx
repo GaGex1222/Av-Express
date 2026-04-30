@@ -212,8 +212,7 @@ export default function DeliveryNowLanding() {
             transition={{ delay: 0.4 }} 
             className="text-lg md:text-2xl font-bold text-slate-100 mb-12 max-w-2xl mx-auto drop-shadow-md"
           >
-            מארזים גדולים? ארגזי שתייה? פרחים? <br />
-            צי הרכבים שלנו מוכן למשימה. מהיר, בטוח ומקצועי.
+            עם - Delivery Now תוכל להזמין משלוח  מעכשיו לעכשיו, עם ממשק, קל, פשוט, ונוח והכי חשוב אמין מהיר ומקצועי!
           </motion.p>
           
           <motion.div 
