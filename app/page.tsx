@@ -184,57 +184,66 @@ export default function DeliveryNowLanding() {
 
       {/* HERO SECTION */}
 {/* HERO SECTION */}
-      <section className="relative min-h-screen w-full flex items-center justify-center px-6 overflow-hidden">
-        {/* Background Image Container - stretched to cover everything */}
-        <div className="absolute inset-0 w-full h-full">
-          <div className="absolute inset-0 bg-slate-900/60 z-10" />
-          <img 
-            src="/landing_page.png" 
-            alt="Background" 
-            className="w-full h-full object-cover object-center" 
-          />
-        </div>
-        
-        <div className="max-w-4xl mx-auto text-center relative z-20 pt-20 pb-10">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            className="text-4xl md:text-7xl lg:text-6xl font-black leading-tight mb-8 text-white uppercase tracking-tighter"
-          >
-            שליחויות רכב <br />
-            לחנויות ומסעדות - <span className="text-[#FF5100]">בלי</span> <br />
-            <span className="text-[#FF5100]">לרדוף</span> אחרי אף אחד
-          </motion.h1>
+ <section className="relative min-h-screen w-full flex items-center justify-center px-6 overflow-hidden">
+  {/* Background Image Container */}
+  <div className="absolute inset-0 w-full h-full">
+    <div className="absolute inset-0 bg-slate-900/60 z-10" />
+    <img 
+      src="/landing_page.png" 
+      alt="Background" 
+      className="w-full h-full object-cover object-center" 
+    />
+  </div>
+  
+  <div className="max-w-4xl mx-auto text-center relative z-20 pt-20 pb-10">
+    <motion.span 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2 }}
+      className="inline-block text-[#FF5100] font-bold tracking-[0.2em] uppercase mb-4 text-sm md:text-base border-b-2 border-[#FF5100]/30 pb-1"
+    >
+      שליח פרטי
+    </motion.span>
 
-          <motion.p 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            transition={{ delay: 0.4 }} 
-            className="text-lg md:text-2xl font-bold text-slate-100 mb-12 max-w-2xl mx-auto drop-shadow-md"
-          >
-            עם - Delivery Now תוכל להזמין משלוח  מעכשיו לעכשיו, עם ממשק, קל, פשוט, ונוח והכי חשוב אמין מהיר ומקצועי!
-          </motion.p>
-          
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.5 }} 
-            className="flex flex-col items-center gap-4"
-          >
-            <Link 
-              href="/order" 
-              className="bg-[#FF5100] text-white px-10 py-4 md:px-12 md:py-5 rounded-full font-black text-xl md:text-2xl shadow-2xl hover:bg-white hover:text-[#FF5100] transition-all flex items-center gap-3"
-            >
-              <Zap className="fill-current" /> הזמינו עכשיו
-            </Link>
-            
-            {/* הכיתוב החדש שהוספת */}
-            <span className="text-white/70 text-xs md:text-sm font-medium tracking-wide italic">
-              * על פי זמינות בלבד
-            </span>
-          </motion.div>
-        </div>
-      </section>
+    <motion.h1 
+      initial={{ opacity: 0, y: 20 }} 
+      animate={{ opacity: 1, y: 0 }} 
+      className="text-4xl md:text-7xl lg:text-6xl font-black leading-tight mb-8 text-white uppercase tracking-tighter"
+    >
+      שליחויות רכב <br />
+      לחנויות ומסעדות - <span className="text-[#FF5100]">בלי</span> <br />
+      <span className="text-[#FF5100]">לרדוף</span> אחרי אף אחד
+    </motion.h1>
+
+    {/* הטקסט המעודכן מהתמונה */}
+    <motion.p 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      transition={{ delay: 0.4 }} 
+      className="text-lg md:text-2xl font-bold text-slate-100 mb-12 max-w-2xl mx-auto drop-shadow-md leading-relaxed"
+    >
+      ארגזים, ציוד אישי, פרחים, או כל דבר שמעוניינים לשלוח! זמין מנתניה והסביבה לכל חלקי הארץ.
+    </motion.p>
+    
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }} 
+      animate={{ opacity: 1, y: 0 }} 
+      transition={{ delay: 0.5 }} 
+      className="flex flex-col items-center gap-4"
+    >
+      <Link 
+        href="/order" 
+        className="bg-[#FF5100] text-white px-10 py-4 md:px-12 md:py-5 rounded-full font-black text-xl md:text-2xl shadow-2xl hover:bg-white hover:text-[#FF5100] transition-all flex items-center gap-3"
+      >
+        <Zap className="fill-current" /> הזמינו עכשיו
+      </Link>
+      
+      <span className="text-white/70 text-xs md:text-sm font-medium tracking-wide italic">
+        * על פי זמינות בלבד
+      </span>
+    </motion.div>
+  </div>
+</section>
 
       {/* HOW IT WORKS SECTION */}
       <section id="how-it-works" className="py-24 bg-[#F8FAFC]">
