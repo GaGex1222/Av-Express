@@ -8,9 +8,12 @@ import {
   Phone, User, Edit3, Check, Mail, 
   ShoppingBag,
   Cuboid,
-  Zap,
-  Weight
+  Clock,
+  Calendar,
+  Loader2 // נוסף עבור אנימציית הטעינה
 } from 'lucide-react';
+
+import { calculateFinalPrice, getFrontendPrice } from '@/lib/maps';
 
 const libraries: ("places")[] = ["places"];
 
@@ -24,7 +27,6 @@ const COLORS = {
 
 const PRICE_PER_KM = 5.5;
 
-// עדכון מערך הגדלים עם תיאור ומשקל בולטים יותר
 const SIZES = [
   { id: 'מעטפה', label: 'מעטפה', price: 35, icon: <Mail size={22} />, weight: 'עד 0.25 ק"ג', dimensions: '20x20' },
   { id: 'קטן', label: 'קטן', price: 45, icon: <ShoppingBag size={22} />, weight: 'עד 5 ק"ג', dimensions: '30x30' },
@@ -52,6 +54,11 @@ interface DeliveryPoint {
 export default function ProfessionalOrderPage() {
   const [packageSize, setPackageSize] = useState('');
   const [isSizeCollapsed, setIsSizeCollapsed] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // מצב טעינה חדש
+  
+  const [deliveryType, setDeliveryType] = useState('instant'); 
+  const [scheduledTime, setScheduledTime] = useState('');
+
   const [pickup, setPickup] = useState<DeliveryPoint>({
     id: 'pickup', address: '', apartment: '', floor: '', notes: '', contactName: '', contactPhone: ''
   });
@@ -61,7 +68,6 @@ export default function ProfessionalOrderPage() {
   
   const [collapsedStates, setCollapsedStates] = useState<Record<string, boolean>>({});
   const [totalPrice, setTotalPrice] = useState(0);
-  const [totalKm, setTotalKm] = useState(0);
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
@@ -71,57 +77,87 @@ export default function ProfessionalOrderPage() {
   const isFormValid = () => {
     const validatePoint = (p: DeliveryPoint) => 
       p.address && p.apartment && p.floor && p.contactName && isValidIsraeliPhone(p.contactPhone);
+    
+    const isTimingValid = deliveryType === 'instant' || (deliveryType === 'scheduled' && scheduledTime !== '');
 
-    return validatePoint(pickup) && dropOffs.every(validatePoint);
+    return validatePoint(pickup) && dropOffs.every(validatePoint) && isTimingValid && packageSize;
   };
 
   useEffect(() => {
-    const calculateRoadDistance = async () => {
-      const selectedSize = SIZES.find(s => s.id === packageSize);
-      const basePrice = selectedSize ? selectedSize.price : 0;
-
-      if (!pickup.lat || !pickup.lng || !dropOffs.some(d => d.lat && d.lng)) {
-        setTotalKm(0);
-        setTotalPrice(basePrice);
+    const updateQuote = async () => {
+      // 1. אם אין גודל חבילה - אפס את המחיר וצא
+      if (!packageSize) {
+        setTotalPrice(0);
         return;
       }
 
-      const service = new google.maps.DistanceMatrixService();
-      const validDrops = dropOffs.filter(d => d.lat && d.lng);
-      
-      const waypoints = [
-        { lat: pickup.lat, lng: pickup.lng },
-        ...validDrops.map(d => ({ lat: d.lat!, lng: d.lng! }))
-      ];
+      const hasPickup = pickup.lat && pickup.lng;
+      const hasFirstDropoff = dropOffs[0]?.lat && dropOffs[0]?.lng;
 
-      let totalMeters = 0;
-
-      for (let i = 0; i < waypoints.length - 1; i++) {
-        try {
-          const response = await service.getDistanceMatrix({
-            origins: [waypoints[i]],
-            destinations: [waypoints[i + 1]],
-            travelMode: google.maps.TravelMode.DRIVING,
-          });
-
-          const element = response.rows[0].elements[0];
-          if (element.status === "OK" && element.distance) {
-            totalMeters += element.distance.value;
-          }
-        } catch (error) {
-          console.error("Distance Matrix error:", error);
-        }
+      // 2. אם נבחר גודל אבל אין עדיין כתובות - הצג את מחיר הבסיס בלבד
+      if (!hasPickup || !hasFirstDropoff) {
+        // כאן אנחנו קוראים ללוגיקה של המחיר עם מרחק 0 כדי להראות מחיר התחלתי
+        const basePriceOnly = calculateFinalPrice(0, packageSize);
+        setTotalPrice(basePriceOnly);
+        return;
       }
 
-      const distanceInKm = totalMeters / 1000;
-      setTotalKm(parseFloat(distanceInKm.toFixed(1)));
-      setTotalPrice(Math.round(basePrice + (distanceInKm * PRICE_PER_KM)));
+      try {
+        // 3. יש כתובות? תריץ חישוב מלא מול גוגל
+        const price = await getFrontendPrice(
+          { lat: pickup.lat!, lng: pickup.lng! },
+          dropOffs.filter(d => d.lat && d.lng) as { lat: number; lng: number }[],
+          packageSize
+        );
+
+        setTotalPrice(price);
+      } catch (error) {
+        console.error("Error updating price:", error);
+      }
     };
 
-    if (window.google) {
-      calculateRoadDistance();
+    if (isLoaded) {
+      const timer = setTimeout(updateQuote, 500); // הורדתי מעט את ה-debounce ל-500ms לתגובה מהירה יותר
+      return () => clearTimeout(timer);
     }
-  }, [dropOffs, pickup, packageSize]);
+  }, [dropOffs, pickup, packageSize, isLoaded]);
+
+  const handlePayment = async () => {
+    if (!isFormValid() || isSubmitting) return;
+
+    setIsSubmitting(true); // התחלת אנימציית טעינה
+
+    const orderData = {
+      packageType: packageSize,
+      isScheduled: deliveryType === 'scheduled',
+      scheduledDate: scheduledTime,
+      pickup: pickup,
+      dropOffs: dropOffs,
+      totalPrice: totalPrice
+    };
+
+    try {
+      const response = await fetch('/api/order/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData),
+      });
+
+      const result = await response.json();
+      
+      if (result.status === 'success' && result.checkoutUrl) {
+        // הפניה ללינק התשלום שהתקבל מ-Grow/Make
+        window.location.href = result.checkoutUrl;
+      } else {
+        alert('חלה שגיאה ביצירת התשלום. נא לנסות שוב.');
+        setIsSubmitting(false);
+      }
+    } catch (error) {
+      console.error('Failed to send order:', error);
+      alert('שגיאת תקשורת. נא לנסות שוב.');
+      setIsSubmitting(false);
+    }
+  };
 
   if (!isLoaded) return null;
 
@@ -133,10 +169,63 @@ export default function ProfessionalOrderPage() {
         .input-fix { width: 100%; height: 60px !important; border-radius: 1.25rem; background-color: white !important; border: 2px solid #E2E8F0; color: #0F172A !important; font-size: 1.1rem !important; font-weight: 700 !important; outline: none; transition: all 0.2s ease; }
         .input-fix:focus { border-color: ${COLORS.accent}; box-shadow: 0 0 0 4px ${COLORS.highlight}; }
         .input-error { border-color: #ef4444 !important; }
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator { cursor: pointer; }
       `}</style>
 
       <div className="max-w-4xl mx-auto space-y-5">
         
+        {/* Delivery Timing Section */}
+        <section className="bg-white rounded-[2.5rem] p-6 shadow-sm border-2 border-white space-y-4">
+          <label className="text-xs font-black text-slate-400 uppercase tracking-widest mr-2 block">מתי לאסוף את המשלוח?</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <button 
+              onClick={() => setDeliveryType('instant')}
+              className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all ${deliveryType === 'instant' ? 'border-[#FF5100] bg-orange-50/30' : 'border-slate-100 bg-white'}`}
+            >
+              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${deliveryType === 'instant' ? 'border-[#FF5100]' : 'border-slate-300'}`}>
+                {deliveryType === 'instant' && <div className="w-3 h-3 rounded-full bg-[#FF5100]" />}
+              </div>
+              <div className="flex items-center gap-3">
+                <Clock size={20} className={deliveryType === 'instant' ? 'text-[#FF5100]' : 'text-slate-400'} />
+                <span className={`font-bold ${deliveryType === 'instant' ? 'text-slate-900' : 'text-slate-500'}`}>בהקדם האפשרי</span>
+              </div>
+            </button>
+
+            <button 
+              onClick={() => setDeliveryType('scheduled')}
+              className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all ${deliveryType === 'scheduled' ? 'border-[#FF5100] bg-orange-50/30' : 'border-slate-100 bg-white'}`}
+            >
+              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${deliveryType === 'scheduled' ? 'border-[#FF5100]' : 'border-slate-300'}`}>
+                {deliveryType === 'scheduled' && <div className="w-3 h-3 rounded-full bg-[#FF5100]" />}
+              </div>
+              <div className="flex items-center gap-3">
+                <Calendar size={20} className={deliveryType === 'scheduled' ? 'text-[#FF5100]' : 'text-slate-400'} />
+                <span className={`font-bold ${deliveryType === 'scheduled' ? 'text-slate-900' : 'text-slate-500'}`}>תזמון מראש</span>
+              </div>
+            </button>
+          </div>
+
+          <AnimatePresence>
+            {deliveryType === 'scheduled' && (
+              <motion.div 
+                initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden pt-2"
+              >
+                <input 
+                  type="datetime-local" 
+                  lang="he-IL"
+                  step="60"
+                  className="input-fix px-6" 
+                  value={scheduledTime}
+                  onChange={(e) => setScheduledTime(e.target.value)}
+                />
+                <p className="text-[10px] text-slate-400 mt-2 mr-2">* השליח יגיע בטווח של חצי שעה מהזמן שנבחר</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </section>
+
+        {/* Package Size Section */}
         <motion.section 
             layout
             className={`bg-white rounded-[2.5rem] shadow-sm border-2 transition-all duration-500 overflow-hidden ${isSizeCollapsed ? 'border-slate-100 bg-slate-50/50' : 'border-white p-6 shadow-xl shadow-slate-200/50'}`}
@@ -217,11 +306,9 @@ export default function ProfessionalOrderPage() {
         </button>
       </div>
 
-{/* Sticky Footer - תיקון מרווחים ויחס בין מחיר לכפתור */}
+      {/* Sticky Footer */}
       <div className="fixed bottom-0 left-0 right-0 p-4 md:p-6 bg-white/95 backdrop-blur-md border-t border-slate-100 flex items-center justify-between shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-50">
         <div className="max-w-4xl mx-auto w-full flex items-center justify-between gap-4 md:gap-12">
-          
-          {/* אזור המחיר - נשאר קבוע ולא נדחס */}
           <div className="flex items-center gap-3 md:gap-8 shrink-0">
             <div className="flex flex-col">
               <span className="text-[10px] md:text-xs text-slate-400 font-black uppercase tracking-wider whitespace-nowrap">סה"כ לתשלום</span>
@@ -230,21 +317,29 @@ export default function ProfessionalOrderPage() {
             <div className="hidden sm:block w-px h-10 bg-slate-100" />
           </div>
           
-          {/* כפתור התשלום - גדל בהדרגה ושומר על מרווח */}
           <button 
-            disabled={!isFormValid()}
-            className={`text-white px-6 md:px-16 h-14 md:h-18 rounded-full text-lg md:text-2xl font-black flex items-center justify-center gap-3 shadow-2xl transition-all active:scale-95 shrink-0 ${!isFormValid() ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+            disabled={!isFormValid() || isSubmitting}
+            onClick={handlePayment}
+            className={`text-white px-6 md:px-16 h-14 md:h-18 rounded-full text-lg md:text-2xl font-black flex items-center justify-center gap-3 shadow-2xl transition-all active:scale-95 shrink-0 ${(!isFormValid() || isSubmitting) ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
             style={{ 
               backgroundColor: COLORS.primary, 
-              boxShadow: isFormValid() ? `0 10px 30px -5px ${COLORS.primary}66` : 'none',
+              boxShadow: isFormValid() && !isSubmitting ? `0 10px 30px -5px ${COLORS.primary}66` : 'none',
               minWidth: 'fit-content'
             }}
           >
-            <span className="whitespace-nowrap">המשך לתשלום</span>
-            <ArrowRight size={24} className="shrink-0 hidden md:block" />
-            <ArrowRight size={20} className="shrink-0 md:hidden" />
+            {isSubmitting ? (
+              <>
+                <span className="whitespace-nowrap">מעבד הזמנה...</span>
+                <Loader2 size={24} className="animate-spin" />
+              </>
+            ) : (
+              <>
+                <span className="whitespace-nowrap">המשך לתשלום</span>
+                <ArrowRight size={24} className="shrink-0 hidden md:block" />
+                <ArrowRight size={20} className="shrink-0 md:hidden" />
+              </>
+            )}
           </button>
-
         </div>
       </div>
     </div>
