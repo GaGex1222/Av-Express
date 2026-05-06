@@ -62,6 +62,7 @@ export default function ProfessionalOrderPage() {
   
   const [deliveryType, setDeliveryType] = useState('instant'); 
   const [scheduledTime, setScheduledTime] = useState('');
+  const [latestDeliveryTime, setLatestDeliveryTime] = useState('');
 
   // פרטי לקוח משלם (עבור קבלה)
   const [customer, setCustomer] = useState({ fullName: '', phone: '' });
@@ -144,6 +145,7 @@ export default function ProfessionalOrderPage() {
       packageType: packageSize,
       isScheduled: deliveryType === 'scheduled',
       scheduledDate: scheduledTime,
+      latestDeliveryTime: latestDeliveryTime,
       pickup: pickup,
       dropOffs: dropOffs,
       totalPrice: totalPrice
@@ -268,14 +270,26 @@ export default function ProfessionalOrderPage() {
             {deliveryType === 'scheduled' && (
               <motion.div 
                 initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden pt-2"
+                className="overflow-hidden pt-2 space-y-4"
               >
-                <input 
-                  type="datetime-local" 
-                  className="input-fix px-6" 
-                  value={scheduledTime}
-                  onChange={(e) => setScheduledTime(e.target.value)}
-                />
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-slate-700 mr-2">שעת איסוף:</label>
+                  <input 
+                    type="datetime-local" 
+                    className="input-fix px-6" 
+                    value={scheduledTime}
+                    onChange={(e) => setScheduledTime(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-slate-700 mr-2">השעה הכי מאוחרת להספקת המשלוח:</label>
+                  <input 
+                    type="time" 
+                    className="input-fix px-6" 
+                    value={latestDeliveryTime}
+                    onChange={(e) => setLatestDeliveryTime(e.target.value)}
+                  />
+                </div>
               </motion.div>
             )}
           </AnimatePresence>

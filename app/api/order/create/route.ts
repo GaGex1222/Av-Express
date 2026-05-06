@@ -11,7 +11,8 @@ export async function POST(req: Request) {
       isScheduled, 
       scheduledDate, 
       pickup, 
-      dropOffs 
+      dropOffs,
+      latestDeliveryTime
     } = body;
 
     console.log(customer)
@@ -22,13 +23,17 @@ export async function POST(req: Request) {
       .from('orders')
       .insert({
         status: 'pending_payment',
+        customer_name: customer.fullName,
+        customer_phone: customer.phone,
         total_price: secureAmount, // המחיר שחושב בשרת
         weight_category: packageType,
+        pickup_name: pickup.contactName,
         pickup_address: pickup.address,
         pickup_phone: pickup.contactPhone,
         pickup_date: new Date().toISOString(),
         is_scheduled: isScheduled,
         scheduled_at: isScheduled ? scheduledDate : null,
+        latest_delivery_time: latestDeliveryTime || null,
       })
       .select()
       .single();
