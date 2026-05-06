@@ -25,7 +25,6 @@ const COLORS = {
   highlight: '#D9EFFF', 
 };
 
-const PRICE_PER_KM = 5.5;
 
 const SIZES = [
   { id: 'מעטפה', label: 'מעטפה', price: 35, icon: <Mail size={22} />, weight: 'עד 0.25 ק"ג', dimensions: '20x20' },
@@ -188,7 +187,7 @@ export default function ProfessionalOrderPage() {
               </div>
               <div className="flex items-center gap-3">
                 <Clock size={20} className={deliveryType === 'instant' ? 'text-[#FF5100]' : 'text-slate-400'} />
-                <span className={`font-bold ${deliveryType === 'instant' ? 'text-slate-900' : 'text-slate-500'}`}>בהקדם האפשרי</span>
+                <span className={`font-bold ${deliveryType === 'instant' ? 'text-slate-900' : 'text-slate-500'}`}>מעכשיו לעכשיו</span>
               </div>
             </button>
 
@@ -201,7 +200,7 @@ export default function ProfessionalOrderPage() {
               </div>
               <div className="flex items-center gap-3">
                 <Calendar size={20} className={deliveryType === 'scheduled' ? 'text-[#FF5100]' : 'text-slate-400'} />
-                <span className={`font-bold ${deliveryType === 'scheduled' ? 'text-slate-900' : 'text-slate-500'}`}>תזמון מראש</span>
+                <span className={`font-bold ${deliveryType === 'scheduled' ? 'text-slate-900' : 'text-slate-500'}`}>משלוח עתידי</span>
               </div>
             </button>
           </div>
@@ -220,7 +219,7 @@ export default function ProfessionalOrderPage() {
                   value={scheduledTime}
                   onChange={(e) => setScheduledTime(e.target.value)}
                 />
-                <p className="text-[10px] text-slate-400 mt-2 mr-2">* השליח יגיע בטווח של חצי שעה מהזמן שנבחר</p>
+                <p className="text-[10px] text-slate-400 mt-2 mr-2">* השליח יגיע בטווח של רבע שעה מהזמן שנבחר</p>
               </motion.div>
             )}
           </AnimatePresence>
