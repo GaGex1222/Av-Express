@@ -1,4 +1,3 @@
-// app/api/order/create/route.ts
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { getServerPrice } from '@/lib/maps';
@@ -35,7 +34,6 @@ export async function POST(req: Request) {
 
     if (orderError) throw new Error(`Order creation failed: ${orderError.message}`);
 
-    // 4. יצירת נקודות המסירה
     const deliveryPoints = dropOffs.map((drop: any) => ({
       order_id: order.id,
       destination_address: drop.address,
@@ -51,7 +49,6 @@ export async function POST(req: Request) {
 
     if (pointsError) throw new Error(`Delivery points failed: ${pointsError.message}`);
 
-    // 5. שליחת הבקשה ל-Make (עבור תשלום)
     const makeResponse = await fetch('https://hook.eu1.make.com/javaepckm2hpi8orvfoss2mhcl4871je', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

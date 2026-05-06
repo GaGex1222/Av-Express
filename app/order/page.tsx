@@ -10,7 +10,7 @@ import {
   Cuboid,
   Clock,
   Calendar,
-  Loader2 // נוסף עבור אנימציית הטעינה
+  Loader2 
 } from 'lucide-react';
 
 import { calculateFinalPrice, getFrontendPrice } from '@/lib/maps';
@@ -39,6 +39,12 @@ const isValidIsraeliPhone = (phone: string) => {
   return regex.test(phone);
 };
 
+const isValidFullName = (name: string) => {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length < 2) return false;
+  return parts.every(part => part.length >= 2);
+};
+
 interface DeliveryPoint {
   id: string; 
   address: string; 
@@ -54,7 +60,7 @@ interface DeliveryPoint {
 export default function ProfessionalOrderPage() {
   const [packageSize, setPackageSize] = useState('');
   const [isSizeCollapsed, setIsSizeCollapsed] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false); // מצב טעינה חדש
+  const [isSubmitting, setIsSubmitting] = useState(false); 
   
   const [deliveryType, setDeliveryType] = useState('instant'); 
   const [scheduledTime, setScheduledTime] = useState('');
@@ -76,7 +82,7 @@ export default function ProfessionalOrderPage() {
 
   const isFormValid = () => {
     const validatePoint = (p: DeliveryPoint) => 
-      p.address && p.apartment && p.floor && p.contactName && isValidIsraeliPhone(p.contactPhone);
+      p.address && p.apartment && p.floor && isValidFullName(p.contactName) && isValidIsraeliPhone(p.contactPhone);
     
     const isTimingValid = deliveryType === 'instant' || (deliveryType === 'scheduled' && scheduledTime !== '');
 
@@ -85,7 +91,6 @@ export default function ProfessionalOrderPage() {
 
   useEffect(() => {
     const updateQuote = async () => {
-      // 1. אם אין גודל חבילה - אפס את המחיר וצא
       if (!packageSize) {
         setTotalPrice(0);
         return;
@@ -94,16 +99,13 @@ export default function ProfessionalOrderPage() {
       const hasPickup = pickup.lat && pickup.lng;
       const hasFirstDropoff = dropOffs[0]?.lat && dropOffs[0]?.lng;
 
-      // 2. אם נבחר גודל אבל אין עדיין כתובות - הצג את מחיר הבסיס בלבד
       if (!hasPickup || !hasFirstDropoff) {
-        // כאן אנחנו קוראים ללוגיקה של המחיר עם מרחק 0 כדי להראות מחיר התחלתי
         const basePriceOnly = calculateFinalPrice(0, packageSize);
         setTotalPrice(basePriceOnly);
         return;
       }
 
       try {
-        // 3. יש כתובות? תריץ חישוב מלא מול גוגל
         const price = await getFrontendPrice(
           { lat: pickup.lat!, lng: pickup.lng! },
           dropOffs.filter(d => d.lat && d.lng) as { lat: number; lng: number }[],
@@ -117,7 +119,7 @@ export default function ProfessionalOrderPage() {
     };
 
     if (isLoaded) {
-      const timer = setTimeout(updateQuote, 500); // הורדתי מעט את ה-debounce ל-500ms לתגובה מהירה יותר
+      const timer = setTimeout(updateQuote, 500); 
       return () => clearTimeout(timer);
     }
   }, [dropOffs, pickup, packageSize, isLoaded]);
@@ -125,7 +127,7 @@ export default function ProfessionalOrderPage() {
   const handlePayment = async () => {
     if (!isFormValid() || isSubmitting) return;
 
-    setIsSubmitting(true); // התחלת אנימציית טעינה
+    setIsSubmitting(true); 
 
     const orderData = {
       packageType: packageSize,
@@ -146,7 +148,6 @@ export default function ProfessionalOrderPage() {
       const result = await response.json();
       
       if (result.status === 'success' && result.checkoutUrl) {
-        // הפניה ללינק התשלום שהתקבל מ-Grow/Make
         window.location.href = result.checkoutUrl;
       } else {
         alert('חלה שגיאה ביצירת התשלום. נא לנסות שוב.');
@@ -174,7 +175,7 @@ export default function ProfessionalOrderPage() {
 
       <div className="max-w-4xl mx-auto space-y-5">
         
-        {/* Delivery Timing Section */}
+        {/* Timing Section */}
         <section className="bg-white rounded-[2.5rem] p-6 shadow-sm border-2 border-white space-y-4">
           <label className="text-xs font-black text-slate-400 uppercase tracking-widest mr-2 block">מתי לאסוף את המשלוח?</label>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -306,7 +307,6 @@ export default function ProfessionalOrderPage() {
         </button>
       </div>
 
-      {/* Sticky Footer */}
       <div className="fixed bottom-0 left-0 right-0 p-4 md:p-6 bg-white/95 backdrop-blur-md border-t border-slate-100 flex items-center justify-between shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-50">
         <div className="max-w-4xl mx-auto w-full flex items-center justify-between gap-4 md:gap-12">
           <div className="flex items-center gap-3 md:gap-8 shrink-0">
@@ -351,9 +351,10 @@ function PointSection({ title, point, onUpdate, isPickup, onDelete, canDelete, i
 
   const validate = () => {
     const isPhoneValid = isValidIsraeliPhone(point.contactPhone);
-    const isAllFilled = point.address && point.apartment && point.floor && point.contactName;
+    const isNameValid = isValidFullName(point.contactName);
+    const isAllFilled = point.address && point.apartment && point.floor;
 
-    if (isAllFilled && isPhoneValid) {
+    if (isAllFilled && isPhoneValid && isNameValid) {
       setCollapsed(true);
       setShowErrors(false);
     } else {
@@ -361,9 +362,10 @@ function PointSection({ title, point, onUpdate, isPickup, onDelete, canDelete, i
     }
   };
 
-  const getErrorClass = (val: string, type: 'text' | 'phone' = 'text') => {
+  const getErrorClass = (val: string, type: 'text' | 'phone' | 'name' = 'text') => {
     if (!showErrors) return '';
     if (type === 'phone') return !isValidIsraeliPhone(val) ? 'input-error' : '';
+    if (type === 'name') return !isValidFullName(val) ? 'input-error' : '';
     return !val ? 'input-error' : '';
   };
 
@@ -412,9 +414,22 @@ function PointSection({ title, point, onUpdate, isPickup, onDelete, canDelete, i
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none z-10 text-slate-300 group-focus-within:text-blue-600"><User size={20}/></div>
-                <input type="text" placeholder="שם איש קשר *" className={`input-fix pl-12 pr-5 text-right ${getErrorClass(point.contactName)}`} value={point.contactName} onChange={e => onUpdate({...point, contactName: e.target.value})} />
+              <div className="relative group flex flex-col">
+                <div className="relative">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none z-10 text-slate-300 group-focus-within:text-blue-600"><User size={20}/></div>
+                    <input 
+                        type="text" 
+                        placeholder="שם מלא (פרטי ומשפחה) *" 
+                        className={`input-fix pl-12 pr-5 text-right ${getErrorClass(point.contactName, 'name')}`} 
+                        value={point.contactName} 
+                        onChange={e => onUpdate({...point, contactName: e.target.value})} 
+                    />
+                </div>
+                {showErrors && !isValidFullName(point.contactName) && (
+                    <span className="text-[10px] text-red-500 mt-1 mr-2 font-bold animate-pulse">
+                        חובה להזין שם פרטי ומשפחה (לפחות 2 אותיות לכל שם)
+                    </span>
+                )}
               </div>
               <div className="relative group">
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none z-10 text-slate-300 group-focus-within:text-blue-600"><Phone size={20}/></div>
