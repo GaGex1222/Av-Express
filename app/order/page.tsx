@@ -10,7 +10,8 @@ import {
   Cuboid,
   Clock,
   Calendar,
-  Loader2 
+  Loader2,
+  ReceiptText
 } from 'lucide-react';
 
 import { calculateFinalPrice, getFrontendPrice } from '@/lib/maps';
@@ -24,7 +25,6 @@ const COLORS = {
   lightBg: '#F8FAFC',
   highlight: '#D9EFFF', 
 };
-
 
 const SIZES = [
   { id: 'מעטפה', label: 'מעטפה', price: 35, icon: <Mail size={22} />, weight: 'עד 0.25 ק"ג', dimensions: '20x20' },
@@ -40,8 +40,7 @@ const isValidIsraeliPhone = (phone: string) => {
 
 const isValidFullName = (name: string) => {
   const parts = name.trim().split(/\s+/);
-  if (parts.length < 2) return false;
-  return parts.every(part => part.length >= 2);
+  return parts.length >= 2 && parts.every(part => part.length >= 2);
 };
 
 interface DeliveryPoint {
@@ -64,6 +63,10 @@ export default function ProfessionalOrderPage() {
   const [deliveryType, setDeliveryType] = useState('instant'); 
   const [scheduledTime, setScheduledTime] = useState('');
 
+  // פרטי לקוח משלם (עבור קבלה)
+  const [customer, setCustomer] = useState({ fullName: '', phone: '' });
+  const [customerErrors, setCustomerErrors] = useState({ fullName: false, phone: false });
+
   const [pickup, setPickup] = useState<DeliveryPoint>({
     id: 'pickup', address: '', apartment: '', floor: '', notes: '', contactName: '', contactPhone: ''
   });
@@ -80,12 +83,13 @@ export default function ProfessionalOrderPage() {
   });
 
   const isFormValid = () => {
+    const validateCustomer = isValidFullName(customer.fullName) && isValidIsraeliPhone(customer.phone);
     const validatePoint = (p: DeliveryPoint) => 
-      p.address && p.apartment && p.floor && isValidFullName(p.contactName) && isValidIsraeliPhone(p.contactPhone);
+      p.address && p.apartment && p.floor && p.contactName.trim().length > 0 && isValidIsraeliPhone(p.contactPhone);
     
     const isTimingValid = deliveryType === 'instant' || (deliveryType === 'scheduled' && scheduledTime !== '');
 
-    return validatePoint(pickup) && dropOffs.every(validatePoint) && isTimingValid && packageSize;
+    return validateCustomer && validatePoint(pickup) && dropOffs.every(validatePoint) && isTimingValid && packageSize;
   };
 
   useEffect(() => {
@@ -124,11 +128,19 @@ export default function ProfessionalOrderPage() {
   }, [dropOffs, pickup, packageSize, isLoaded]);
 
   const handlePayment = async () => {
-    if (!isFormValid() || isSubmitting) return;
+    if (!isFormValid() || isSubmitting) {
+        setCustomerErrors({ 
+            fullName: !isValidFullName(customer.fullName), 
+            phone: !isValidIsraeliPhone(customer.phone) 
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+    }
 
     setIsSubmitting(true); 
 
     const orderData = {
+      customer: customer,
       packageType: packageSize,
       isScheduled: deliveryType === 'scheduled',
       scheduledDate: scheduledTime,
@@ -168,12 +180,59 @@ export default function ProfessionalOrderPage() {
         * { font-family: 'Heebo', sans-serif !important; }
         .input-fix { width: 100%; height: 60px !important; border-radius: 1.25rem; background-color: white !important; border: 2px solid #E2E8F0; color: #0F172A !important; font-size: 1.1rem !important; font-weight: 700 !important; outline: none; transition: all 0.2s ease; }
         .input-fix:focus { border-color: ${COLORS.accent}; box-shadow: 0 0 0 4px ${COLORS.highlight}; }
-        .input-error { border-color: #ef4444 !important; }
-        input[type="datetime-local"]::-webkit-calendar-picker-indicator { cursor: pointer; }
+        .input-error { border-color: #ef4444 !important; background-color: #fff1f1 !important; }
       `}</style>
 
       <div className="max-w-4xl mx-auto space-y-5">
         
+        {/* Customer Info (Billing) */}
+        <section className="bg-white rounded-[2.5rem] p-8 shadow-sm border-2 border-white space-y-6">
+          <div className="flex items-center gap-3 border-b border-slate-50 pb-4">
+            <ReceiptText className="text-[#003594]" size={28} />
+            <div>
+                <h2 className="text-2xl font-black text-[#0F172A]">פרטי לקוח</h2>
+                <p className="text-sm text-slate-400 font-medium">מידע זה ישמש להנפקת קבלה עבור התשלום</p>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="relative group">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none z-10 text-slate-300 group-focus-within:text-blue-600"><User size={20}/></div>
+                <input 
+                  type="text" 
+                  placeholder="שם מלא (פרטי ומשפחה) *" 
+                  className={`input-fix pl-12 pr-5 text-right ${customerErrors.fullName ? 'input-error' : ''}`} 
+                  value={customer.fullName} 
+                  onChange={e => {
+                    setCustomer(prev => ({ ...prev, fullName: e.target.value }));
+                    if (customerErrors.fullName) setCustomerErrors(prev => ({ ...prev, fullName: false }));
+                  }}
+                  onBlur={() => setCustomerErrors(prev => ({ ...prev, fullName: !isValidFullName(customer.fullName) }))}
+                />
+                {customerErrors.fullName && (
+                    <span className="text-[10px] text-red-500 mt-1 mr-2 font-bold">נא להזין שם פרטי ומשפחה (לפחות 2 מילים)</span>
+                )}
+            </div>
+            <div className="relative group">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none z-10 text-slate-300 group-focus-within:text-blue-600"><Phone size={20}/></div>
+                <input 
+                  type="tel" 
+                  placeholder="טלפון ליצירת קשר *" 
+                  className={`input-fix pl-12 pr-5 text-right ${customerErrors.phone ? 'input-error' : ''}`} 
+                  value={customer.phone} 
+                  onChange={e => {
+                    setCustomer(prev => ({ ...prev, phone: e.target.value }));
+                    if (customerErrors.phone) setCustomerErrors(prev => ({ ...prev, phone: false }));
+                  }}
+                  onBlur={() => setCustomerErrors(prev => ({ ...prev, phone: !isValidIsraeliPhone(customer.phone) }))}
+                />
+                {customerErrors.phone && (
+                    <span className="text-[10px] text-red-500 mt-1 mr-2 font-bold">נא להזין מספר טלפון תקין (לדוגמה: 0501234567)</span>
+                )}
+            </div>
+          </div>
+        </section>
+
         {/* Timing Section */}
         <section className="bg-white rounded-[2.5rem] p-6 shadow-sm border-2 border-white space-y-4">
           <label className="text-xs font-black text-slate-400 uppercase tracking-widest mr-2 block">מתי לאסוף את המשלוח?</label>
@@ -213,13 +272,10 @@ export default function ProfessionalOrderPage() {
               >
                 <input 
                   type="datetime-local" 
-                  lang="he-IL"
-                  step="60"
                   className="input-fix px-6" 
                   value={scheduledTime}
                   onChange={(e) => setScheduledTime(e.target.value)}
                 />
-                <p className="text-[10px] text-slate-400 mt-2 mr-2">* השליח יגיע בטווח של רבע שעה מהזמן שנבחר</p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -242,7 +298,7 @@ export default function ProfessionalOrderPage() {
                   <div>
                     <div className="text-slate-400 font-black text-[10px] uppercase mb-0.5">גודל משלוח</div>
                     <div className="text-slate-800 font-bold text-sm">
-                        {SIZES.find(s => s.id === packageSize)?.label} — {SIZES.find(s => s.id === packageSize)?.weight} ({SIZES.find(s => s.id === packageSize)?.dimensions})
+                        {SIZES.find(s => s.id === packageSize)?.label} — {SIZES.find(s => s.id === packageSize)?.weight}
                     </div>
                   </div>
                 </div>
@@ -261,13 +317,9 @@ export default function ProfessionalOrderPage() {
                       }`}
                       style={packageSize === size.id ? { borderColor: COLORS.primary, color: COLORS.primary } : {}}
                     >
-                      <div className={`absolute top-0 right-0 px-2 py-0.5 text-[8px] font-black rounded-bl-lg ${packageSize === size.id ? 'bg-[#FF5100] text-white' : 'bg-slate-200 text-slate-500'}`}>
-                        {size.weight}
-                      </div>
-
                       <div className={`p-2 rounded-full mb-1 transition-transform ${packageSize === size.id ? 'scale-110' : ''}`}>{size.icon}</div>
                       <span className="text-base font-black leading-tight">{size.label}</span>
-                      <span className="text-[10px] opacity-70 px-2 leading-tight">{size.dimensions}</span>
+                      <span className="text-[10px] opacity-70 px-2 leading-tight">{size.weight}</span>
                     </button>
                   ))}
                 </div>
@@ -306,6 +358,7 @@ export default function ProfessionalOrderPage() {
         </button>
       </div>
 
+      {/* Payment Bar */}
       <div className="fixed bottom-0 left-0 right-0 p-4 md:p-6 bg-white/95 backdrop-blur-md border-t border-slate-100 flex items-center justify-between shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-50">
         <div className="max-w-4xl mx-auto w-full flex items-center justify-between gap-4 md:gap-12">
           <div className="flex items-center gap-3 md:gap-8 shrink-0">
@@ -313,7 +366,6 @@ export default function ProfessionalOrderPage() {
               <span className="text-[10px] md:text-xs text-slate-400 font-black uppercase tracking-wider whitespace-nowrap">סה"כ לתשלום</span>
               <div className="text-2xl md:text-4xl font-black" style={{ color: COLORS.secondary }}>₪{totalPrice}</div>
             </div>
-            <div className="hidden sm:block w-px h-10 bg-slate-100" />
           </div>
           
           <button 
@@ -322,21 +374,16 @@ export default function ProfessionalOrderPage() {
             className={`text-white px-6 md:px-16 h-14 md:h-18 rounded-full text-lg md:text-2xl font-black flex items-center justify-center gap-3 shadow-2xl transition-all active:scale-95 shrink-0 ${(!isFormValid() || isSubmitting) ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
             style={{ 
               backgroundColor: COLORS.primary, 
-              boxShadow: isFormValid() && !isSubmitting ? `0 10px 30px -5px ${COLORS.primary}66` : 'none',
-              minWidth: 'fit-content'
+              boxShadow: isFormValid() && !isSubmitting ? `0 10px 30px -5px ${COLORS.primary}66` : 'none'
             }}
           >
             {isSubmitting ? (
-              <>
-                <span className="whitespace-nowrap">מעבד הזמנה...</span>
+              <div className="flex items-center gap-3">
                 <Loader2 size={24} className="animate-spin" />
-              </>
+                <span>מעבד הזמנה...</span>
+              </div>
             ) : (
-              <>
-                <span className="whitespace-nowrap">המשך לתשלום</span>
-                <ArrowRight size={24} className="shrink-0 hidden md:block" />
-                <ArrowRight size={20} className="shrink-0 md:hidden" />
-              </>
+              <><span>המשך לתשלום</span><ArrowRight size={24} /></>
             )}
           </button>
         </div>
@@ -350,10 +397,10 @@ function PointSection({ title, point, onUpdate, isPickup, onDelete, canDelete, i
 
   const validate = () => {
     const isPhoneValid = isValidIsraeliPhone(point.contactPhone);
-    const isNameValid = isValidFullName(point.contactName);
+    const isNameProvided = point.contactName.trim().length > 0;
     const isAllFilled = point.address && point.apartment && point.floor;
 
-    if (isAllFilled && isPhoneValid && isNameValid) {
+    if (isAllFilled && isPhoneValid && isNameProvided) {
       setCollapsed(true);
       setShowErrors(false);
     } else {
@@ -361,10 +408,9 @@ function PointSection({ title, point, onUpdate, isPickup, onDelete, canDelete, i
     }
   };
 
-  const getErrorClass = (val: string, type: 'text' | 'phone' | 'name' = 'text') => {
+  const getErrorClass = (val: string, type: 'text' | 'phone' = 'text') => {
     if (!showErrors) return '';
     if (type === 'phone') return !isValidIsraeliPhone(val) ? 'input-error' : '';
-    if (type === 'name') return !isValidFullName(val) ? 'input-error' : '';
     return !val ? 'input-error' : '';
   };
 
@@ -413,22 +459,15 @@ function PointSection({ title, point, onUpdate, isPickup, onDelete, canDelete, i
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="relative group flex flex-col">
-                <div className="relative">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none z-10 text-slate-300 group-focus-within:text-blue-600"><User size={20}/></div>
-                    <input 
-                        type="text" 
-                        placeholder="שם מלא (פרטי ומשפחה) *" 
-                        className={`input-fix pl-12 pr-5 text-right ${getErrorClass(point.contactName, 'name')}`} 
-                        value={point.contactName} 
-                        onChange={e => onUpdate({...point, contactName: e.target.value})} 
-                    />
-                </div>
-                {showErrors && !isValidFullName(point.contactName) && (
-                    <span className="text-[10px] text-red-500 mt-1 mr-2 font-bold animate-pulse">
-                        חובה להזין שם פרטי ומשפחה (לפחות 2 אותיות לכל שם)
-                    </span>
-                )}
+              <div className="relative group">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none z-10 text-slate-300 group-focus-within:text-blue-600"><User size={20}/></div>
+                <input 
+                  type="text" 
+                  placeholder="שם ליצירת קשר *" 
+                  className={`input-fix pl-12 pr-5 text-right ${showErrors && point.contactName.trim().length === 0 ? 'input-error' : ''}`} 
+                  value={point.contactName} 
+                  onChange={e => onUpdate({...point, contactName: e.target.value})} 
+                />
               </div>
               <div className="relative group">
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none z-10 text-slate-300 group-focus-within:text-blue-600"><Phone size={20}/></div>

@@ -6,6 +6,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { 
+      customer,
       packageType, 
       isScheduled, 
       scheduledDate, 
@@ -13,7 +14,7 @@ export async function POST(req: Request) {
       dropOffs 
     } = body;
 
-    console.log(body)
+    console.log(customer)
 
     const secureAmount = await getServerPrice(pickup, dropOffs, packageType);
 
@@ -53,6 +54,7 @@ export async function POST(req: Request) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        customer,
         orderId: order.id,
         packageType,
         totalAmount: secureAmount,
