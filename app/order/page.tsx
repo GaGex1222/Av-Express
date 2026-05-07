@@ -38,6 +38,8 @@ const isValidIsraeliPhone = (phone: string) => {
   return regex.test(phone);
 };
 
+
+
 const isValidFullName = (name: string) => {
   const parts = name.trim().split(/\s+/);
   return parts.length >= 2 && parts.every(part => part.length >= 2);

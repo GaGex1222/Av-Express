@@ -1,35 +1,64 @@
 import { NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabase';
+import twilio from 'twilio';
 
 export async function POST(req: Request) {
   try {
-    const contentType = req.headers.get('content-type') || '';
-    let data;
+    const accountSid = process.env.TWILIO_ACCOUNT_SID;
+    const authToken = process.env.TWILIO_AUTH_TOKEN;
+    const client = twilio(accountSid, authToken);
 
-    if (contentType.includes('application/json')) {
-      // אם זה JSON
-      data = await req.json();
-    } else {
-      // אם זה Form Data (מה ש-Grow שולחים בפועל)
-      const formData = await req.formData();
-      data = Object.fromEntries(formData.entries());
+    const formData = await req.formData();
+    const rawData = Object.fromEntries(formData.entries());
+
+    const isSuccess = rawData['status'] === '1';
+    const orderId = rawData['data[customFields][cField1]'] as string;
+    const transactionId = rawData['data[transactionId]'];
+
+    console.log(`Processing Webhook: Order ${orderId}, Success: ${isSuccess}`);
+
+    if (isSuccess && orderId) {
+      const verificationCode = Math.floor(1000 + Math.random() * 9000).toString();
+
+      const { data: updatedOrder, error } = await supabaseAdmin
+        .from('orders')
+        .update({ 
+          status: 'paid',
+          verification_code:verificationCode,
+          payment_id: transactionId,
+        })
+        .eq('id', orderId)
+        .select('customer_phone, customer_name')
+        .single();
+
+      if (error) {
+        console.error('Supabase Update Error:', error.message);
+        throw error;
+      }
+      
+      console.log(`Order ${orderId} marked as PAID successfully.`);
+
+      if (updatedOrder?.customer_phone) {
+        try {
+          
+          await client.messages.create({
+            from: 'whatsapp:+14155238886', 
+            to: `whatsapp:${updatedOrder.customer_phone}`,
+            body: `שלום ${updatedOrder.customer_name || ''}! ההזמנה שלך ב-A.V Express אושרה. קוד האימות שלך הוא: ${verificationCode}. לצפייה בפרטים: https://your-site.co.il/order/${orderId}`
+          });
+          
+          console.log(`WhatsApp confirmation sent to ${updatedOrder.customer_phone}`);
+        } catch (twilioError) {
+          // אנחנו לא עוצרים את כל התהליך אם הוואטסאפ נכשל, כי התשלום כבר עבר וה-DB עודכן
+          console.error('Failed to send WhatsApp, but order is paid:', twilioError);
+        }
+      }
     }
 
-    console.log('--- Grow Webhook Received ---');
-    console.log(data); 
-    console.log('-----------------------------');
-
-    // תמיד להחזיר 200 ל-Grow
     return NextResponse.json({ received: true }, { status: 200 });
-    
+
   } catch (error: any) {
     console.error('Webhook Error:', error.message);
-    
-    // אם הכל נכשל, ננסה להדפיס את הטקסט הגולמי כדי לראות מה הם שלחו
-    try {
-      const rawText = await req.text();
-      console.log('Raw body received:', rawText);
-    } catch (e) {}
-
-    return NextResponse.json({ error: 'Failed to parse request' }, { status: 400 });
+    return NextResponse.json({ error: 'Webhook failed' }, { status: 500 });
   }
 }
