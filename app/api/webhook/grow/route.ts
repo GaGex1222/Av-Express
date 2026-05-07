@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import twilio from 'twilio';
 
+// ... (אותם אימפורטים)
+
 export async function POST(req: Request) {
   try {
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -15,31 +17,40 @@ export async function POST(req: Request) {
     const orderId = rawData['data[customFields][cField1]'] as string;
     const transactionId = rawData['data[transactionId]'];
 
-    if (isSuccess && orderId) {
-      // יצירת קוד אימות רנדומלי
-      const verificationCode = Math.floor(1000 + Math.random() * 9000).toString();
+    if (!isSuccess || !orderId) {
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
 
-      // עדכון ה-DB וקבלת פרטי הלקוח
-      const { data: updatedOrder, error } = await supabaseAdmin
-        .from('orders')
-        .update({
-          status: 'paid',
-          verification_code: verificationCode,
-          payment_id: transactionId,
-        })
-        .eq('id', orderId)
-        .select('customer_phone, customer_name')
-        .single();
+    const { data: existingOrder } = await supabaseAdmin
+      .from('orders')
+      .select('status')
+      .eq('id', orderId)
+      .single();
 
-      if (error) {
-        console.error('Supabase Update Error:', error.message);
-        throw error;
-      }
+    if (existingOrder?.status === 'paid') {
+      console.log(`Order ${orderId} already processed. Skipping.`);
+      return NextResponse.json({ received: true }, { status: 200 });
+    }
 
-      if (updatedOrder?.customer_phone) {
-        try {
-          // הגדרת תוכן ההודעה החדש
-          const messageBody = `🚀 *ההזמנה שלך ב-DeliveryNow אושרה!*
+    const verificationCode = Math.floor(1000 + Math.random() * 9000).toString();
+
+    const { data: updatedOrder, error } = await supabaseAdmin
+      .from('orders')
+      .update({
+        status: 'paid',
+        verification_code: verificationCode,
+        payment_id: transactionId,
+      })
+      .eq('id', orderId)
+      .select('customer_phone, customer_name')
+      .single();
+
+    if (error) throw error;
+
+    // 3. שליחת הוואטסאפ
+    if (updatedOrder?.customer_phone) {
+      try {
+        const messageBody = `🚀 *ההזמנה שלך ב-DeliveryNow אושרה!*
 
         שלום ${updatedOrder.customer_name || 'אורח'}, איזה כיף, אנחנו כבר בדרך! 🏎️
 
@@ -50,24 +61,23 @@ export async function POST(req: Request) {
         https://swiper.co.il/order/${orderId}
 
         תודה שבחרת בנו! 🙌`;
-
-          await client.messages.create({
-            from: 'whatsapp:+14155238886',
-            to: `whatsapp:${updatedOrder.customer_phone}`,
-            body: messageBody
-          });
-
-        } catch (twilioError) {
-          // שגיאת וואטסאפ לא מפילה את ה-Webhook כדי למנוע כפילויות בתשלום
-          console.error('Failed to send WhatsApp, but order is paid:', twilioError);
-        }
+        await client.messages.create({
+          from: 'whatsapp:+14155238886',
+          to: `whatsapp:${updatedOrder.customer_phone}`,
+          body: messageBody
+        });
+        console.log(`Message sent to ${updatedOrder.customer_phone}`);
+      } catch (twilioError) {
+        console.error('Twilio Error:', twilioError);
       }
     }
 
+    // 4. החזרת תשובה מיידית
     return NextResponse.json({ received: true }, { status: 200 });
 
   } catch (error: any) {
     console.error('Webhook Error:', error.message);
-    return NextResponse.json({ error: 'Webhook failed' }, { status: 500 });
+    // חשוב: אם השגיאה היא ב-Logic שלך, אל תחזיר 500 אם אתה לא רוצה ש-Grow ינסה שוב
+    return NextResponse.json({ error: 'Webhook failed' }, { status: 200 }); 
   }
 }
