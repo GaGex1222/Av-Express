@@ -15,8 +15,6 @@ export async function POST(req: Request) {
     const orderId = rawData['data[customFields][cField1]'] as string;
     const transactionId = rawData['data[transactionId]'];
 
-    console.log(`Processing Webhook: Order ${orderId}, Success: ${isSuccess}`);
-
     if (isSuccess && orderId) {
       // יצירת קוד אימות רנדומלי
       const verificationCode = Math.floor(1000 + Math.random() * 9000).toString();
@@ -38,39 +36,32 @@ export async function POST(req: Request) {
         throw error;
       }
 
-      console.log(`Order ${orderId} marked as PAID successfully.`);
-
-        if (updatedOrder?.customer_phone) {
+      if (updatedOrder?.customer_phone) {
         try {
-            const targetNumber = `whatsapp:${updatedOrder.customer_phone}`;
-            const fromNumber = 'whatsapp:+14155238886';
+          // הגדרת תוכן ההודעה החדש
+          const messageBody = `🚀 *ההזמנה שלך ב-DeliveryNow אושרה!*
 
-            // לוג לפני השליחה כדי לראות את הפורמט הסופי
-            console.log('--- Attempting WhatsApp Send ---');
-            console.log('From:', fromNumber);
-            console.log('To:', targetNumber);
-            console.log('Order ID:', orderId);
+        שלום ${updatedOrder.customer_name || 'אורח'}, איזה כיף, אנחנו כבר בדרך! 🏎️
 
-            const messageBody = `🚀 *ההזמנה שלך ב-DeliveryNow אושרה!* ...`; // תוכן ההודעה
+        🔐 *קוד אימות למסירה:* ${verificationCode}
+        (_יש למסור את הקוד לשליח בעת ההגעה_)
 
-            const message = await client.messages.create({
-            from: fromNumber,
-            to: targetNumber,
+        📍 *למעקב בזמן אמת ופרטי המשלוח:*
+        https://swiper.co.il/order/${orderId}
+
+        תודה שבחרת בנו! 🙌`;
+
+          await client.messages.create({
+            from: 'whatsapp:+14155238886',
+            to: `whatsapp:${updatedOrder.customer_phone}`,
             body: messageBody
-            });
+          });
 
-            // לוג במקרה של הצלחה - ה-SID הוא המזהה הייחודי של ההודעה ב-Twilio
-            console.log('✅ WhatsApp Sent Successfully. Message SID:', message.sid);
-            console.log('Status:', message.status);
-
-        } catch (twilioError: any) {
-            // לוג מפורט מאוד במקרה של שגיאה
-            console.error('❌ Twilio Error Detected:');
-            console.error('Error Code:', twilioError.code); // קוד השגיאה של Twilio (למשל 21608)
-            console.error('Error Message:', twilioError.message);
-            console.error('More Info:', twilioError.moreInfo); // לינק לפתרון השגיאה באתר של Twilio
+        } catch (twilioError) {
+          // שגיאת וואטסאפ לא מפילה את ה-Webhook כדי למנוע כפילויות בתשלום
+          console.error('Failed to send WhatsApp, but order is paid:', twilioError);
         }
-        }
+      }
     }
 
     return NextResponse.json({ received: true }, { status: 200 });
