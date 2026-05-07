@@ -34,10 +34,9 @@ const SIZES = [
 ];
 
 const isValidIsraeliPhone = (phone: string) => {
-  const regex = /^05\d{8}$/;
+  const regex = /^05[0-8]\d{7}$/;
   return regex.test(phone);
 };
-
 
 const isValidFullName = (name: string) => {
   const parts = name.trim().split(/\s+/);
