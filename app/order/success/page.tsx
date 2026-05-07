@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Home, ShoppingBag, Loader2, MapPin, User, Clock, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
@@ -12,7 +12,8 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
 );
 
-export default function OrderSuccess() {
+// רכיב התוכן הפנימי שמשתמש ב-SearchParams
+function OrderSuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get('orderId');
   
@@ -73,34 +74,31 @@ export default function OrderSuccess() {
         animate={{ opacity: 1, scale: 1 }}
         className="max-w-md w-full bg-white rounded-[3rem] shadow-xl shadow-slate-200/60 p-10 text-center border border-slate-100"
       >
-        {/* Render Top Icon section ONLY if order is found */}
         {isOrderFound && (
           <div className="relative mb-12 flex justify-center pt-6">
               <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="absolute w-48 h-48 bg-green-100/40 rounded-full blur-3xl"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+                className="absolute w-48 h-48 bg-green-100/40 rounded-full blur-3xl"
               />
-
               <motion.div 
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.2 }}
-                  className="relative w-44 h-44 bg-[#22C55E] rounded-full flex items-center justify-center shadow-[0_25px_50px_-12px_rgba(34,197,94,0.5)] border-[10px] border-white"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.2 }}
+                className="relative w-44 h-44 bg-[#22C55E] rounded-full flex items-center justify-center shadow-[0_25px_50px_-12px_rgba(34,197,94,0.5)] border-[10px] border-white"
               >
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.5, duration: 0.4 }}
-                  >
-                    <Check size={64} className="text-white stroke-[5px]" />
-                  </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.5, duration: 0.4 }}
+                >
+                  <Check size={64} className="text-white stroke-[5px]" />
+                </motion.div>
               </motion.div>
           </div>
         )}
 
-        {/* Text Content - Adjusted padding if icon is missing */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -119,7 +117,6 @@ export default function OrderSuccess() {
           </p>
         </motion.div>
 
-        {/* Order Info Card */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -156,7 +153,6 @@ export default function OrderSuccess() {
           )}
         </motion.div>
 
-        {/* Action Buttons */}
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -169,7 +165,6 @@ export default function OrderSuccess() {
           >
             חזרה לדף הבית <Home size={20} />
           </Link>
-          
           <Link 
             href="/order"
             className="w-full bg-white text-[#003594] border-2 border-[#003594] py-4 rounded-2xl font-black text-lg flex items-center justify-center gap-3 hover:bg-slate-50 transition-all"
@@ -183,5 +178,18 @@ export default function OrderSuccess() {
         </p>
       </motion.div>
     </div>
+  );
+}
+
+// הרכיב הראשי ש-Next.js מחפש - עטוף ב-Suspense
+export default function OrderSuccess() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+        <Loader2 className="animate-spin text-[#003594] w-12 h-12" />
+      </div>
+    }>
+      <OrderSuccessContent />
+    </Suspense>
   );
 }
